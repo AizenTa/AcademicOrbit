@@ -191,7 +191,7 @@
                     	<img src="../img/dashboard.png" class="img-icon" alt="dashboard icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Dashboard</span> 
                     </a>
-                    <a href="Listadmin.jsp" class="nav_link"> 
+                    <a href="admin.jsp" class="nav_link"> 
                     	<img src="../img/admin.png" class="img-icon" alt="admins icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Admins</span> 
                     </a>

@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
-import business.Admin;
-
 public class AdminDAO {
 
 	
@@ -31,54 +29,32 @@ public class AdminDAO {
 		stmt = connexion.getStmt();
 	}
 	
-	public void ajouterAdmin(Admin admin) throws SQLException {
-			String admin_username = admin.getUsername();
-			String admin_password = admin.getPassword();
-			String admin_nom = admin.getName();
-			String admin_prenom = admin.getLast_name();
+	public void ajouterAdmin() throws SQLException {
+		char reponse = 'o';
+		while (reponse == 'o') {
+			System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||| Ajoutez Admin |||||||||||||||||||||||||||||||||||||||||||||||||||");
+			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
+			System.out.print("| Entrer username : ");
+			String admin_username = sc.nextLine();
+			System.out.print("| Entrer password : ");
+			String admin_password = sc.nextLine();
+			System.out.print("| Entrer nom : ");
+			String admin_nom = sc.nextLine();
+			System.out.print("| Entrer prenom : ");
+			String admin_prenom = sc.nextLine();
 
 			String hashed_username = hashString(admin_username);
 			String hashed_password = hashString(admin_password);
 
 			stmt.executeUpdate("INSERT INTO admin (username, password, name, last_name) VALUES ('" + hashed_username + "','" + hashed_password + "','" + admin_nom + "','" + admin_prenom + "')");
-		}
-	
-	public List<Admin> selectAllAdmins() throws SQLException {
+			System.out.println("| + => Vous avez bien ajoutez " + admin_nom + " " + admin_prenom);
+			System.out.print("| Voulez vous ajoutez un nouveau admin (o pour oui / n pour non ) : ");
+			reponse = sc.next().charAt(0);
+			sc.nextLine();
+			System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
 
-		// using try-with-resources to avoid closing resources (boiler plate code)
-		List<Admin> admins = new ArrayList<>();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM admin");
-			while (rs.next()) {
-				int id = rs.getInt("id");
-				String name = rs.getString("name");
-				String last_name = rs.getString("last_name");
-				admins.add(new Admin(id, name,last_name));
-			}
-		return admins;
-	}
-	
-	public Admin selectAdmin(int id) throws SQLException {
-		Admin admin = null;
-        ResultSet rs = stmt.executeQuery("SELECT FROM admin WHERE ID="+id);
-			while (rs.next()) {
-				String name = rs.getString("name");
-				String last_name = rs.getString("last_name");
-				admin = new Admin(id, name,last_name);
-			} 
-		return admin;
-	}
-
-	public boolean deleteAdmin(int id){
-		boolean rowDeleted=false;
-		try {
-			stmt.executeUpdate("DELETE FROM admin WHERE ID='" +id+"'");
-			rowDeleted=true;
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
-		return rowDeleted;
 	}
-	
 	private static String hashString(String input) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -1269,6 +1245,5 @@ public class AdminDAO {
 		}
 		return false;
 	}
-
 	
 }
