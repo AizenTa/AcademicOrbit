@@ -1,0 +1,176 @@
+/* Base styles */
+body {
+    background: linear-gradient(to right, #ece9e6, #ffffff);
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Container styles */
+.container {
+    max-width: 900px;
+    width: 100%;
+    padding: 20px;
+}
+
+.login-container {
+    display: flex;
+    max-width: 700px;
+    width: 100%;
+    height: auto;
+    background-color: #f8f9fa;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    animation: fadeIn 1s ease-in-out;
+    border: 1px solid #dee2e6;
+    padding: 0;
+}
+
+.login-image {
+    width: 257px;
+    height: 407px;
+    background-image: url('https://via.placeholder.com/257x407'); /* Replace with your image URL */
+    background-size: cover;
+    background-position: center;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.login-form {
+    flex: 1;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    animation: slideIn 1s ease-in-out;
+}
+
+.login-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: #343a40;
+    font-weight: 700;
+}
+
+.login-form form {
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 10px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-size: 1rem;
+    color: #495057;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.btn-primary {
+    background-color: #28a745;
+    border-color: #28a745;
+    font-size: 18px;
+    padding: 12px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: #218838;
+    border-color: #218838;
+}
+
+.alert-danger {
+    margin-top: 20px;
+}
+
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+.shadow {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.min-vh-100 {
+    min-height: 100vh;
+}
+
+.bg-white {
+    background-color: #f8f9fa;
+}
+
+.rounded {
+    border-radius: 10px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Luxurious Feel */
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+.login-container {
+    border: 1px solid #dee2e6;
+    background-image: linear-gradient(145deg, #f8f9fa, #ffffff);
+}
+
+.login-form h2 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: #007bff;
+}
+
+.form-group input {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    color: #495057;
+}
+
+.btn-primary {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
