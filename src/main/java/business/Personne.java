@@ -28,9 +28,24 @@ public class Personne {
 		this.age = age;
 	}
 	
-	
+	public Personne(int id,String name, String last_name) {
+		super();
+		this.id=tmp++;
+		this.name = name;
+		this.last_name = last_name;
+		
+	}
 	// getter & setter 
 	
+	public Personne(String username, String password, String name, String last_name) {
+		super();
+		this.id=tmp++;
+		this.username=username;
+		this.password=password;
+		this.name = name;
+		this.last_name = last_name;
+	}
+
 	public String getName() {
 		return name;
 	}
