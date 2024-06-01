@@ -213,7 +213,7 @@
                     </a> 
                 </div>
             </div> 
-            <a href="../../java/controller/Logout" class="nav_link"> 
+            <a href="${pageContext.request.contextPath}/Logout" class="nav_link"> 
                     	<img src="../img/signout.png" class="img-icon" alt="signout icon" style="width: 30px; height: 30px; margin-left: 5%">
                 <span class="nav_name">SignOut</span> 
             </a>

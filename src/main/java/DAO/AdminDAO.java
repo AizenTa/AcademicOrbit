@@ -5,8 +5,6 @@ package DAO;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Statement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,11 +13,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
-import business.Professors;
+import business.Professeur;
 
 public class AdminDAO {
 
-	
+/////////////////// Attributs
 	MaConnexion connexion;
 	Statement stmt;
 	Scanner sc = new Scanner(System.in);
@@ -33,12 +31,13 @@ public class AdminDAO {
 		stmt = connexion.getStmt();
 	}
 	    
-	 public List<Professors> getAllProfessors() throws SQLException {
-	        List<Professors> professors = new ArrayList<>();
-	        ResultSet rs = stmt.executeQuery("SELECT * FROM prof");
-	        while (rs.next()) {
-	            Professors prof = new Professors(
-	                rs.getInt("id"),
+/////////////////// Methodes
+	 public List<Professeur> getAllProfsInfos() throws SQLException {
+		 List<Professeur> professors = new ArrayList<>();
+	     ResultSet rs = stmt.executeQuery("SELECT * FROM prof");
+	     while (rs.next()) {
+	        Professeur prof = new Professeur(
+	        		rs.getInt("id"),
 	                rs.getString("username"),
 	                rs.getString("password"),
 	                rs.getString("name"),
@@ -47,53 +46,46 @@ public class AdminDAO {
 	                rs.getString("sex"),
 	                rs.getInt("age"),
 	                rs.getString("cne_prof")
-	            );
-	            professors.add(prof);
-	        }
-	        return professors;
-	    }
+	        );
+	        professors.add(prof);
+	       }
+	     return professors;
+	 }
 
-	 public void addProfessor(Professors prof) throws SQLException {
+	 public void ajouterProf(Professeur prof) throws SQLException {
 	        String prof_username = prof.getUsername();
 	        String prof_password = prof.getPassword();
-	        String name = prof.getName();
-	        String last_name = prof.getLast_name(); // Correct method name
+	        String nom = prof.getNom();
+	        String prenom = prof.getPrenom(); 
 	        String address = prof.getAddress();
 	        String sex = prof.getSex();
 	        int age = prof.getAge();
-	        String cne_prof = prof.getCne_prof(); // Correct method name
+	        String cne_prof = prof.getCne_prof(); 
 	        
-	        String hashed_username = hashString(prof_username);
 	        String hashed_password = hashString(prof_password);
-	    	stmt.executeUpdate("INSERT INTO prof (username,password,name, last_name, address, sex, age, cne_prof) VALUES ('" + hashed_username + "','" + hashed_password + "','" + name + "','" + last_name + "','" + address + "','" + sex + "'," + age + ",'" + cne_prof + "')", Statement.RETURN_GENERATED_KEYS);
-			ResultSet generatedKeys = stmt.getGeneratedKeys();
-			int professorId = -1;
-			if (generatedKeys.next()) {
-				professorId = generatedKeys.getInt(1);
-			} else {
-				throw new SQLException("| Failed to get the generated professor ID.");
-			}
+	    	stmt.executeUpdate("INSERT INTO prof (username,password,name, last_name, address, sex, age, cne_prof) VALUES ('" + prof_username + "','" + hashed_password + "','" + nom + "','" + prenom + "','" + address + "','" + sex + "'," + age + ",'" + cne_prof + "')");			
 	    }
-
-		/*
-		 * public void updateProfessor(Professors prof) throws SQLException { String
-		 * query =
-		 * "UPDATE prof SET username = ?, password = ?, name = ?, last_name = ?, address = ?, sex = ?, age = ?, cne_prof = ? WHERE id = ?"
-		 * ; PreparedStatement pstmt = conn.prepareStatement(query); pstmt.setString(1,
-		 * prof.getUsername()); pstmt.setString(2, prof.getPassword());
-		 * pstmt.setString(3, prof.getName()); pstmt.setString(4, prof.getLast_name());
-		 * pstmt.setString(5, prof.getAddress()); pstmt.setString(6, prof.getSex());
-		 * pstmt.setInt(7, prof.getAge()); pstmt.setString(8, prof.getCne_prof());
-		 * pstmt.setInt(9, prof.getId()); pstmt.executeUpdate(); }
-		 */
-
-		/*
-		 * public void deleteProfessor(int id) throws SQLException { String query =
-		 * "DELETE FROM prof WHERE id = ?"; PreparedStatement pstmt =
-		 * conn.prepareStatement(query); pstmt.setInt(1, id); pstmt.executeUpdate(); }
-		 */
+	
+	 public void modifierProf(Professeur prof, int id) throws SQLException { 
+		    String prof_username = prof.getUsername();
+	        String prof_password = prof.getPassword();
+	        String nom = prof.getNom();
+	        String prenom = prof.getPrenom(); 
+	        String address = prof.getAddress();
+	        String sex = prof.getSex();
+	        int age = prof.getAge();
+	        String cne_prof = prof.getCne_prof(); 
+	        String hashed_password = hashString(prof_password);
+            stmt.executeUpdate("UPDATE prof SET username = '" + prof_username + "',password = '" + hashed_password + "',name = '" + nom + "', last_name = '" + prenom + "', address = '" + address + "', sex = '" + sex + "', age = '" + age + "', cne_prof = '" + cne_prof + "' WHERE id = " + id);
+	 }
+		 		
+	 public void supprimerProf(String id) throws SQLException {  
+		stmt.executeUpdate("DELETE FROM prof WHERE ID='" + id+"'");
+	 }
 	 
-	public void ajouterAdmin() throws SQLException {
+	 
+	 
+	 public void ajouterAdmin() throws SQLException {
 		char reponse = 'o';
 		while (reponse == 'o') {
 			System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||| Ajoutez Admin |||||||||||||||||||||||||||||||||||||||||||||||||||");
@@ -353,6 +345,7 @@ public class AdminDAO {
 	        throw new SQLException("Professor not found for module ID: " + moduleId);
 	    }
 	}
+	
 
 	private int getRandomSalle() throws SQLException {
 	    ResultSet rs = stmt.executeQuery("SELECT id_salle FROM Salles ORDER BY RAND() LIMIT 1");
@@ -471,60 +464,6 @@ public class AdminDAO {
 	}
 	
 
-	public void addProf() {
-	    char reponse_prof = 'o';
-	    while (reponse_prof == 'o') {
-	        System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||| Ajoutez le Prof |||||||||||||||||||||||||||||||||||||||||||||||||");
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer username du prof : ");
-	        String prof_username = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer un mot de passe pour le prof  : ");
-	        String prof_password= sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer le nom de prof : ");
-	        String name = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer le last name de prof " + name + " : ");
-	        String last_name = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer le address de prof " + name + " : ");
-	        String address = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer le sex de prof " + name + " : ");
-	        String sex = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer l'age de prof " + name + " : ");
-	        int age = sc.nextInt();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        sc.nextLine();
-	        System.out.print("| Entrer le cne de prof " + name + " : ");
-	        String cne_prof = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-
-			String hashed_username = hashString(prof_username);
-			String hashed_password = hashString(prof_password);
-
-			try {
-				stmt.executeUpdate("INSERT INTO prof (username,password,name, last_name, address, sex, age, cne_prof) VALUES ('" + hashed_username + "','" + hashed_password + "','" + name + "','" + last_name + "','" + address + "','" + sex + "'," + age + ",'" + cne_prof + "')", Statement.RETURN_GENERATED_KEYS);
-				ResultSet generatedKeys = stmt.getGeneratedKeys();
-				int professorId = -1;
-				if (generatedKeys.next()) {
-					professorId = generatedKeys.getInt(1);
-					System.out.println("| + => Vous avez bien ajoutez " + name + " " + last_name);
-				} else {
-					throw new SQLException("| Failed to get the generated professor ID.");
-				}
-			} catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-            System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("Voulez-vous ajouter un autre prof? (si oui, tapez Oui, si non, tapez n'importe quoi..) : ");
-	        reponse_prof = sc.next().charAt(0);
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-	        sc.nextLine();
-	    }
-	}
 
 	public void addStudent() {
 	    char reponse = 'o';
@@ -663,124 +602,7 @@ public class AdminDAO {
 
 	// modifier section 
 
-	public void modifierProf() {
-	    char reponse = 'o';
-	    while (reponse == 'o') {	    	        
-	    	System.out.println("||||||||||||||||||||||||||||||||||||||||||||||| Modifier Professeur ||||||||||||||||||||||||||||||||||||||||||||||");
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer l'id du professeur à modifier : ");
-	        int id_prof = sc.nextInt();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        sc.nextLine();
-	        System.out.print("| Choisir le champ à modifier (1:username, 2: password, 3: Nom, 4: Prenom, 5: Adresse, 6: Sexe, 7: Age, 8: CNE, 9: Ajouter un module, 10: Supprimer un module) : ");
-	        int reponse_champ = sc.nextInt();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        sc.nextLine();
-
-	        try {
-	            switch (reponse_champ) {
-	            	case 1:
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer username du prof : ");
-	                    String username = sc.nextLine();
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE prof SET username = '" + username + "' WHERE id = " + id_prof);
-	                    break;
-	                case 2:
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer le prénom du prof : ");
-	                    String password = sc.nextLine();
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE prof SET password = '" + password + "' WHERE id = " + id_prof);
-	                    break;
-	            	case 3:
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer le nom du prof : ");
-	                    String prof_name = sc.nextLine();
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE prof SET name = '" + prof_name + "' WHERE id = " + id_prof);
-	                    break;
-	                case 4:
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer le prénom du prof : ");
-	                    String prof_prenom = sc.nextLine();
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE prof SET last_name = '" + prof_prenom + "' WHERE id = " + id_prof);
-	                    break;
-	                case 5:
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer l'adresse du prof : ");
-	                    String prof_address = sc.nextLine();
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE prof SET address = '" + prof_address + "' WHERE id = " + id_prof);
-	                    break;
-	                case 6:
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer le sexe du prof : ");
-	                    String prof_sex = sc.nextLine();
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE prof SET sex = '" + prof_sex + "' WHERE id = " + id_prof);
-	                    break;
-	                case 7:
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer l'âge du prof :");
-	                    int prof_age = sc.nextInt();
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    sc.nextLine();  
-	                    stmt.executeUpdate("UPDATE prof SET age = " + prof_age + " WHERE id = " + id_prof);
-	                    break;
-	                case 8:
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer le CNE du prof :");
-	                    String prof_cne = sc.nextLine();
-	        			System.out.print("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE prof SET cne_prof = '" + prof_cne + "' WHERE id = " + id_prof);
-	                    break;
-	                case 9:
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer l'id du module à ajouter : ");
-	                    int mda_id = sc.nextInt();
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    sc.nextLine();
-
-	                    stmt.executeUpdate("INSERT INTO prof_module (professor_id, module_id) VALUES (" + id_prof + "," + mda_id + ")");
-	                    break;
-	                case 10:
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer l'id du module à supprimer : ");
-	                    int mds_id = sc.nextInt();
-	        			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    sc.nextLine();  
-
-	                    stmt.executeUpdate("DELETE FROM prof_module WHERE professor_id = " + id_prof + " AND module_id = " + mds_id);
-	                    break;
-	                default:
-						System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-						System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-						System.out.println("|                                      CHAMP INVALIDE       -_-                                                  |");
-						System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-						System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-						modifierProf();
-	                   	break;
-	            }
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	            System.out.println("| / => Professeur modifié avec succès.");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        } catch (SQLException e) {
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-				System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("|                                      CHAMP INVALIDE       -_-                                                  |");
-				System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-				modifierProf();
-	        }
-			System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Voulez-vous modifier un autre prof? ('o' pour oui, 'n'importe quel caractère' pour non) : ");
-	        reponse = sc.next().charAt(0);
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-	        sc.nextLine();
-	    }
-	}
+	
 
 	public void modifierStudent() {
 	    char reponse = 'o';
@@ -1065,35 +887,7 @@ public class AdminDAO {
 	
 	// supprimer section 
 	
-	public void supprimerProf() {
-    	System.out.println("|||||||||||||||||||||||||||||||||||||||||||| Supprimer Prof ||||||||||||||||||||||||||||||||||||||||||||||||||||||");
-    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    System.out.print("| Choisir l'id de prof à supprimer : ");
-	    int prof_id = sc.nextInt();
-    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    sc.nextLine();
-
-	    try {
-			if(checkIfProfessorExists(prof_id)==true){
-				stmt.executeUpdate("DELETE FROM prof WHERE ID='" + prof_id+"'");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-				System.out.println("| - => Professeur supprimé avec succès.");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-			} else {
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-				System.out.println("| !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! PROF DEJA SUPPRIME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! |");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-			}
-	     } catch (SQLException e) {
-	    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-			System.out.println("|                                         ID INVALIDE       -_-                                                  |");
-	    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-			supprimerProf();
-	    }
-	}
-
+	
 	public void supprimerStudent() {
     	System.out.println("||||||||||||||||||||||||||||||||||||||||| Supprimer Etudiant |||||||||||||||||||||||||||||||||||||||||||||||||||||");
     	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
@@ -1289,6 +1083,7 @@ public class AdminDAO {
 		}
 		return false;
 	}
+	
 	private boolean checkIfClasseExist(int classeId) throws SQLException {
 		String query = "SELECT COUNT(*) AS count FROM classe WHERE id = " + classeId;
 		try (ResultSet resultSet = stmt.executeQuery(query)) {
@@ -1299,6 +1094,7 @@ public class AdminDAO {
 		}
 		return false;
 	}
+	
 	private boolean checkIfStudentExist(int studentId) throws SQLException {
 		String query = "SELECT COUNT(*) AS count FROM student WHERE id = " + studentId;
 		try (ResultSet resultSet = stmt.executeQuery(query)) {

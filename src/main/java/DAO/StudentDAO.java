@@ -25,7 +25,7 @@ public class StudentDAO {
 		System.out.println("+----------------------------------------------------------------------------------------------------------------+");
     	ResultSet resultat_student = stmt.executeQuery("SELECT * FROM student WHERE ID='" + id + "'");
 	    if (resultat_student.next()) {
-	        Student student = new Student(resultat_student.getString("username"),
+	        Etudiant student = new Etudiant(resultat_student.getString("username"),
 	                                      resultat_student.getString("password"),
 	                                      resultat_student.getString("name"),
 	                                      resultat_student.getString("last_name"),

@@ -6,7 +6,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import business.Professors;
+import business.Professeur;
 
 public class ProfessorsDAO {
 	// attributes 
@@ -262,7 +262,7 @@ public class ProfessorsDAO {
 
 	    ResultSet resultat_prof = stmt.executeQuery("SELECT * FROM prof WHERE ID='" + id + "'");
 	    if (resultat_prof.next()) {
-	        Professors prof = new Professors(resultat_prof.getString("username"),
+	        Professeur prof = new Professeur(resultat_prof.getString("username"),
 	                                      resultat_prof.getString("password"),
 	                                      resultat_prof.getString("name"),
 	                                      resultat_prof.getString("last_name"),

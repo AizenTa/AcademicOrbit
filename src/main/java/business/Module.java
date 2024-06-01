@@ -1,11 +1,9 @@
 package business;
 
 public class Module {
-	private String name;
+	private String nom;
 	private int id;
-	private int nbr_heures;
-	private static int tmp=1;
-	
+	private int nbr_heures;	
 	
 	
 	public Module() {
@@ -13,10 +11,9 @@ public class Module {
 	}
 
 
-	public Module(String name) {
+	public Module(String nom) {
 		super();
-		this.id=tmp++;
-		this.name = name;
+		this.nom = nom;
 	}
 	
 	
@@ -25,19 +22,19 @@ public class Module {
 	}
 
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String nom) {
+		this.nom = nom;
 	}
 
 	public String getName() {
-		return name;
+		return nom;
 	}
 
 
 
 	@Override
 	public String toString() {
-		return  "| ID : " + id +" | Name : " + name ;
+		return  "| ID : " + id +" | Name : " + nom ;
 	}
 
 

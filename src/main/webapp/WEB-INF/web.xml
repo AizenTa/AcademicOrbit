@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://jakarta.ee/xml/ns/jakartaee" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd" id="WebApp_ID" version="6.0">
-  <display-name>AcademicOrbit2</display-name>
+  <display-name>AcademicOrbit</display-name>
   <servlet>
     <description></description>
     <display-name>LoginController</display-name>
@@ -10,26 +10,6 @@
   <servlet-mapping>
     <servlet-name>LoginController</servlet-name>
     <url-pattern>/LoginController</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <description></description>
-    <display-name>AdminController</display-name>
-    <servlet-name>AdminController</servlet-name>
-    <servlet-class>controller.AdminController</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>AdminController</servlet-name>
-    <url-pattern>/AdminController</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <description></description>
-    <display-name>AddProfessorServlet</display-name>
-    <servlet-name>AddProfessorServlet</servlet-name>
-    <servlet-class>controller.AddProfessorServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>AddProfessorServlet</servlet-name>
-    <url-pattern>/AddProfessorServlet</url-pattern>
   </servlet-mapping>
   <servlet>
     <description></description>
@@ -50,5 +30,35 @@
   <servlet-mapping>
     <servlet-name>Ajouter</servlet-name>
     <url-pattern>/Ajouter</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>AjouterProf</display-name>
+    <servlet-name>AjouterProf</servlet-name>
+    <servlet-class>controller.adminServletes.AjouterProf</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AjouterProf</servlet-name>
+    <url-pattern>/AjouterProf</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Supprimer</display-name>
+    <servlet-name>Supprimer</servlet-name>
+    <servlet-class>controller.Supprimer</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Supprimer</servlet-name>
+    <url-pattern>/Supprimer</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Modifier</display-name>
+    <servlet-name>Modifier</servlet-name>
+    <servlet-class>controller.Modifier</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Modifier</servlet-name>
+    <url-pattern>/Modifier</url-pattern>
   </servlet-mapping>
 </web-app>

@@ -5,55 +5,54 @@ public class Personne {
 	// attributes
 	private String username;
 	private String password;
-	private String name;
-	private String last_name;
+	private String nom;
+	private String prenom;
 	private String address;
 	private String sex;
 	private int age;
-	private static int tmp=1;
 	private int id;
 	
 	
 	
 	// constructors
-	public Personne(int id,String username,String password,String name, String last_name, String address, String sex, int age) {
+	public Personne(int id,String username,String password,String nom, String prenom, String address, String sex, int age) {
 		super();
 		this.id=id;
 		this.username=username;
 		this.password=password;
-		this.name = name;
-		this.last_name = last_name;
+		this.nom = nom;
+		this.prenom = prenom;
 		this.address = address;
 		this.sex = sex;
 		this.age = age;
 	}
 	// constructors
-		public Personne(String username,String password,String name, String last_name, String address, String sex, int age) {
+		public Personne(String username,String password,String nom, String prenom, String address, String sex, int age) {
 			super();
 			this.username=username;
 			this.password=password;
-			this.name = name;
-			this.last_name = last_name;
+			this.nom = nom;
+			this.prenom = prenom;
 			this.address = address;
 			this.sex = sex;
 			this.age = age;
 		}
 		
-	public Personne(int id,String name, String last_name) {
+	public Personne(int id,String nom, String prenom) {
 		super();
 		this.id=id;
-		this.name = name;
-		this.last_name = last_name;
+		this.nom = nom;
+		this.prenom = prenom;
 		
 	}
 	// getter & setter 
 	
-	public Personne(String username, String password, String name, String last_name) {
+	public Personne(String username, String password, String nom, String prenom) {
 		super();
 		this.username=username;
 		this.password=password;
-		this.name = name;
-		this.last_name = last_name;
+		this.nom = nom;
+		this.prenom = prenom;
 	}
 
 
@@ -61,8 +60,8 @@ public class Personne {
 			int i, String string2) {
 		// TODO Auto-generated constructor stub
 	}
-	public String getName() {
-		return name;
+	public String getNom() {
+		return nom;
 	}
 	public String getUsername() {
 		return username;
@@ -93,14 +92,14 @@ public class Personne {
 	}
 
 
-	public void setName(String name) {
-		this.name = name;
+	public void setNom(String nom) {
+		this.nom = nom;
 	}
-	public String getLast_name() {
-		return last_name;
+	public String getPrenom() {
+		return prenom;
 	}
-	public void setLast_name(String last_name) {
-		this.last_name = last_name;
+	public void setPrenom(String prenom) {
+		this.prenom = prenom;
 	}
 	public String getAddress() {
 		return address;
@@ -122,7 +121,7 @@ public class Personne {
 
 	@Override
 	public String toString() {
-		return "| Name : " + name + " | Prenom  : " + last_name + " | Addresse : " + address+"| sex : " + sex + " | age :  " + age;
+		return "| Name : " + nom + " | Prenom  : " + prenom + " | Addresse : " + address+"| sex : " + sex + " | age :  " + age;
 	}
 
 

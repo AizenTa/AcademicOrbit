@@ -1,41 +1,43 @@
 package controller;
 
-
-import DAO.MaConnexion;
-import business.Professeur;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import DAO.AdminDAO;
+
 import java.io.IOException;
 import java.sql.SQLException;
 
-@WebServlet("/controller/Ajouter")
-public class Ajouter extends HttpServlet {
-	   private static final long serialVersionUID = 1L;
+import DAO.AdminDAO;
+import DAO.MaConnexion;
+import business.Professeur;
+
+@WebServlet("/controller/Modifier")
+public class Modifier extends HttpServlet {
+	 private static final long serialVersionUID = 1L;
 	   
 
 	    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	       
 	        HttpSession session = request.getSession();
 	        if(session.getAttribute("username")!=null){
+	        	int id = Integer.parseInt(request.getParameter("id"));
 	        	String username = request.getParameter("username");
 	            String password = request.getParameter("password");
 	            String name = request.getParameter("name");
-	            String lastName = request.getParameter("last_name");
+	            String lastName = request.getParameter("lastName");
 	            String address = request.getParameter("address");
 	            String sex = request.getParameter("sex");
 	            int age = Integer.parseInt(request.getParameter("age"));
-	            String cneProf = request.getParameter("cne_prof");
+	            String cneProf = request.getParameter("cneProf");
 
 	            Professeur prof = new Professeur(username, password, name, lastName, address, sex, age, cneProf);
 	            try {
 	            	 MaConnexion connexion= new MaConnexion();
 	                 AdminDAO dao = new AdminDAO(connexion);
-	                 dao.ajouterProf(prof);
+	                 dao.modifierProf(prof,id);
 	            } catch (SQLException e) {
 	                e.printStackTrace();
 	            } catch (ClassNotFoundException e) {

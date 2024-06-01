@@ -4,19 +4,17 @@ import java.util.ArrayList;
 
 public class Classe {
 
-	private String name;
+	private String nom;
 	private String filliere;
 	private String grade;
 	private int id;
-	private static int tmp=1;
 	ArrayList<Module> modules = new ArrayList<>();
-	ArrayList<Student> students = new ArrayList<>();
+	ArrayList<Etudiant> students = new ArrayList<>();
 	
 	// contructors
-	public Classe(String name, String filliere, String grade) {
+	public Classe(String nom, String filliere, String grade) {
 		super();
-		this.id=tmp++;
-		this.name = name;
+		this.nom = nom;
 		this.filliere = filliere;
 		this.grade = grade;
 	}
@@ -28,11 +26,11 @@ public class Classe {
 
 
 	public String getName() {
-		return name;
+		return nom;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String nom) {
+		this.nom = nom;
 	}
 
 	public String getFilliere() {
@@ -68,19 +66,19 @@ public class Classe {
 	}
 
 
-	public ArrayList<Student> getStudents() {
+	public ArrayList<Etudiant> getStudents() {
 		return students;
 	}
 
 
-	public void setStudents(ArrayList<Student> students) {
+	public void setStudents(ArrayList<Etudiant> students) {
 		this.students = students;
 	}
 
 
 	@Override
 	public String toString() {
-		return "| Name : " + name + " | Filiere : " + filliere + " | Grade : " + grade ;
+		return "| Name : " + nom + " | Filiere : " + filliere + " | Grade : " + grade ;
 	}
 
 	
