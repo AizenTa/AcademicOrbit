@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : sam. 01 juin 2024 à 01:51
+-- Généré le : lun. 03 juin 2024 à 01:16
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -31,8 +31,8 @@ CREATE TABLE `admin` (
   `id` int(11) NOT NULL,
   `username` varchar(250) NOT NULL,
   `password` varchar(250) NOT NULL,
-  `name` varchar(70) NOT NULL,
-  `last_name` varchar(70) NOT NULL
+  `name` varchar(250) NOT NULL,
+  `last_name` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -40,8 +40,8 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`id`, `username`, `password`, `name`, `last_name`) VALUES
-(1, '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'taha yassine', 'taabani'),
-(25, 'fb9a97d5393e80300028616a4cd8c97e472b0623fd94acf95b37eda4128559f3', 'fb9a97d5393e80300028616a4cd8c97e472b0623fd94acf95b37eda4128559f3', 'taha', 'taha');
+(1, 'admin', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'taha ', 'taabani'),
+(26, 'zaki', 'f557e0d3cabb6d8ca3368a7c00f826f6b89601bff28b443fade2bdc79810bfb7', 'zaki', 'zaki');
 
 -- --------------------------------------------------------
 
@@ -61,14 +61,14 @@ CREATE TABLE `classe` (
 --
 
 INSERT INTO `classe` (`id`, `name`, `filliere`, `grade`) VALUES
-(1, 'LEI', 'Math', '1er annee'),
 (2, 'LEI', 'Informatique', '2eme annee'),
 (3, 'LEI', 'Physique', '3eme annee'),
 (4, 'Master', 'Math applique', 'M1'),
 (5, 'Master', 'MQL', 'M2'),
 (6, 'PhD', 'Algebre', 'D1'),
 (7, 'PhD', 'cyber security', 'D2'),
-(55, 'info', 'informatique', 's6');
+(55, 'info', 'informatique', 's6'),
+(56, 'null', 'lmr9a', 'null');
 
 -- --------------------------------------------------------
 
@@ -86,10 +86,6 @@ CREATE TABLE `classe_module` (
 --
 
 INSERT INTO `classe_module` (`classe_id`, `module_id`) VALUES
-(1, 4),
-(1, 5),
-(1, 6),
-(1, 7),
 (2, 1),
 (2, 2),
 (2, 3),
@@ -119,9 +115,6 @@ CREATE TABLE `class_student` (
 --
 
 INSERT INTO `class_student` (`class_id`, `student_id`) VALUES
-(1, 4),
-(1, 6),
-(1, 25),
 (2, 5),
 (2, 7),
 (3, 10),
@@ -151,16 +144,6 @@ CREATE TABLE `emploisclasses` (
   `salle_id` int(11) NOT NULL,
   `prof_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Déchargement des données de la table `emploisclasses`
---
-
-INSERT INTO `emploisclasses` (`classe_id`, `module_id`, `day_of_week`, `start_time`, `end_time`, `salle_id`, `prof_id`) VALUES
-(55, 1, 'MONDAY', 0, 1, 11, 1),
-(55, 1, 'MONDAY', 2, 3, 11, 1),
-(55, 1, 'FRIDAY', 2, 3, 11, 1),
-(55, 1, 'FRIDAY', 3, 4, 11, 1);
 
 -- --------------------------------------------------------
 
@@ -211,11 +194,9 @@ CREATE TABLE `prof` (
 --
 
 INSERT INTO `prof` (`id`, `username`, `password`, `name`, `last_name`, `address`, `sex`, `age`, `cne_prof`) VALUES
-(1, 'mehdi', 'mehdi', 'Mehdi', 'Moukhafi', 'MEKNES', 'Male', 35, 'P12345'),
-(28, '477e6e09f183ed2f55c0a491beb78a8f2cfcaf1cbb78de753c4a93008fd5d3c8', '616cfbbd28b49666655899a092416e90d106df3727a292ab870428a5b4ead28c', 'mouad', 'tantaoui', 'qenitra', 'male', 40, 'p2323'),
-(29, '6c6dab33994f8b98bb9db20ef4ed62d66b5f267cbcfc575b582e317fe2d58c62', '6c6dab33994f8b98bb9db20ef4ed62d66b5f267cbcfc575b582e317fe2d58c62', 'med', 'med', 'med', 'med', 55, '56vnvn'),
-(30, '1b16b1df538ba12dc3f97edbb85caa7050d46c148134290feba80f8236c83db9', '1b16b1df538ba12dc3f97edbb85caa7050d46c148134290feba80f8236c83db9', 'n', 'n', 'n', '22', 22, '23ghg'),
-(31, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', '123', '123', '123', 'Femme', 3, '123');
+(28, '477e6e09f183ed2f55c0a491beb78a8f2cfcaf1cbb78de753c4a93008fd5d3c8', '616cfbbd28b49666655899a092416e90d106df3727a292ab870428a5b4ead28c', 'mouad', 'tantaoui', 'qenitra', 'Homme', 40, 'p2323'),
+(29, '6c6dab33994f8b98bb9db20ef4ed62d66b5f267cbcfc575b582e317fe2d58c62', '6c6dab33994f8b98bb9db20ef4ed62d66b5f267cbcfc575b582e317fe2d58c62', 'med', 'med', 'med', 'Homme', 55, '56vnvn'),
+(30, '1b16b1df538ba12dc3f97edbb85caa7050d46c148134290feba80f8236c83db9', '1b16b1df538ba12dc3f97edbb85caa7050d46c148134290feba80f8236c83db9', 'n', 'n', 'n', 'Femme', 22, '23ghg');
 
 -- --------------------------------------------------------
 
@@ -227,14 +208,6 @@ CREATE TABLE `prof_module` (
   `professor_id` int(11) NOT NULL,
   `module_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Déchargement des données de la table `prof_module`
---
-
-INSERT INTO `prof_module` (`professor_id`, `module_id`) VALUES
-(1, 1),
-(1, 3);
 
 -- --------------------------------------------------------
 
@@ -298,22 +271,22 @@ CREATE TABLE `student` (
 --
 
 INSERT INTO `student` (`id`, `username`, `password`, `name`, `last_name`, `address`, `sex`, `age`, `cne_student`, `note_finale`, `abscence_hours`) VALUES
-(1, 'taha', 'taha', 'Taha Taabani', 'taabani', 'MEKNES - MARJANE 2', 'Male', 21, 'M12345', 18, 4),
-(2, 'zakaria', 'zakaria', 'Zakaria', 'El Omari', 'MEKNES - TOULAL', 'Male', 20, 'M12435', 19, 3),
-(3, 'mohammed', 'mohammed', 'Charlie', 'Doe', 'MEKENS - OUISLANE', 'Male', 20, 'M15432', 19, 4),
-(4, 'amine', 'amine', 'Amine', 'El aach', 'Rachidia', 'Male', 21, 'M32415', 15, 5),
-(5, 'aouni', 'aouni', 'ayoub', 'aouni', 'MEKNES - SIDI BOUZKRI', 'Male', 20, 'M54321', 14, 1),
-(6, 'manare', 'manare', 'Manare', 'Ramli', 'MEKNES - TOULAL', 'Female', 20, 'M32451', 14, 6),
-(7, 'nouhayla', 'nouhayla', 'Nouhayla', 'Ajidad', 'IFRANE', 'Female', 21, 'R56789', 14.75, 1),
-(8, 'marouane', 'marouane', 'Marouane', 'Ait Benchikh', 'OUJDA', 'Male', 20, 'K342523', 16, 2),
-(9, 'mehdi', 'mehdi', 'Mehdi', 'Ben Mekki', 'MRIRT', 'Male', 20, 'C123145', 14, 2),
-(10, 'khadija', 'khadija', 'Khadija', 'Abioui', 'MEKNES - EL HAJEB', 'Female', 21, 'V098763', 15, 3),
-(11, 'ibrahim', 'ibrahim', 'Ibrahim', 'Belkass', 'MEKNES - SBAA AYOUNE', 'Male', 22, 'A353443', 16, 6),
-(12, 'lahmar', 'lahmar', 'Zakaria', 'Lahmar', 'HED KOURT', 'Male', 21, 'G343465', 14, 7),
-(13, 'boubkri', 'boubkri', 'Mohammed', 'Boubkri', 'MEKNES', 'Male', 21, 'D32432', 15, 8),
-(14, 'meryeme', 'meryeme', 'Meryeme', 'Chaouchi', 'FES', 'Female', 21, 'F4352435', 14, 1),
-(24, '140f4b62d94c3a8ef01bf6f6214be4f38acdfeba9fd05d3934dce70b6230345a', '296986496b3dbdb365de1b66bba0118cb101f6c92d61c309442228a6d7ec4155', 'taabani', 'taha yassine', 'marjane', 'male', 21, 'D595236', NULL, 0),
-(25, 'f557e0d3cabb6d8ca3368a7c00f826f6b89601bff28b443fade2bdc79810bfb7', 'f557e0d3cabb6d8ca3368a7c00f826f6b89601bff28b443fade2bdc79810bfb7', 'zaki', 'zaki', 'zaki', 'zaki', 55, '45hfgh', NULL, 0);
+(1, 'taha', 'taha', 'Taha Taabani', 'taabani', 'MEKNES - MARJANE 2', 'Homme', 21, 'M12345', 18, 4),
+(2, 'zakaria', 'zakaria', 'Zakaria', 'El Omari', 'MEKNES - TOULAL', 'Homme', 20, 'M12435', 19, 3),
+(3, 'mohammed', 'mohammed', 'Charlie', 'Doe', 'MEKENS - OUISLANE', 'Homme', 20, 'M15432', 19, 4),
+(4, 'amine', 'amine', 'Amine', 'El aach', 'Rachidia', 'Homme', 21, 'M32415', 15, 5),
+(5, 'aouni', 'aouni', 'ayoub', 'aouni', 'MEKNES - SIDI BOUZKRI', 'Homme', 20, 'M54321', 14, 1),
+(6, 'manare', 'manare', 'Manare', 'Ramli', 'MEKNES - TOULAL', 'Femme', 20, 'M32451', 14, 6),
+(7, 'nouhayla', 'nouhayla', 'Nouhayla', 'Ajidad', 'IFRANE', 'Femme', 21, 'R56789', 14.75, 1),
+(8, 'marouane', 'marouane', 'Marouane', 'Ait Benchikh', 'OUJDA', 'Homme', 20, 'K342523', 16, 2),
+(9, 'mehdi', 'mehdi', 'Mehdi', 'Ben Mekki', 'MRIRT', 'Homme', 20, 'C123145', 14, 2),
+(10, 'khadija', 'khadija', 'Khadija', 'Abioui', 'MEKNES - EL HAJEB', 'Femme', 21, 'V098763', 15, 3),
+(11, 'ibrahim', 'ibrahim', 'Ibrahim', 'Belkass', 'MEKNES - SBAA AYOUNE', 'Homme', 22, 'A353443', 16, 6),
+(12, 'lahmar', 'lahmar', 'Zakaria', 'Lahmar', 'HED KOURT', 'Homme', 21, 'G343465', 14, 7),
+(13, 'boubkri', 'boubkri', 'Mohammed', 'Boubkri', 'MEKNES', 'Homme', 21, 'D32432', 15, 8),
+(14, 'meryeme', 'meryeme', 'Meryeme', 'Chaouchi', 'FES', 'Femme', 21, 'F4352435', 14, 1),
+(24, '140f4b62d94c3a8ef01bf6f6214be4f38acdfeba9fd05d3934dce70b6230345a', '296986496b3dbdb365de1b66bba0118cb101f6c92d61c309442228a6d7ec4155', 'taabani', 'taha yassine', 'marjane', 'Homme', 21, 'D595236', NULL, 0),
+(25, 'zaki', 'f557e0d3cabb6d8ca3368a7c00f826f6b89601bff28b443fade2bdc79810bfb7', 'zaki', 'zaki', 'ggghhhhhhh', 'Homme', 58, 'hhhhhhh', NULL, 2);
 
 -- --------------------------------------------------------
 
@@ -446,13 +419,13 @@ ALTER TABLE `student_module`
 -- AUTO_INCREMENT pour la table `admin`
 --
 ALTER TABLE `admin`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT pour la table `classe`
 --
 ALTER TABLE `classe`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT pour la table `module`
@@ -464,7 +437,7 @@ ALTER TABLE `module`
 -- AUTO_INCREMENT pour la table `prof`
 --
 ALTER TABLE `prof`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT pour la table `salles`
@@ -476,7 +449,7 @@ ALTER TABLE `salles`
 -- AUTO_INCREMENT pour la table `student`
 --
 ALTER TABLE `student`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- Contraintes pour les tables déchargées
