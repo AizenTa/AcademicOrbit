@@ -54,13 +54,16 @@ public class Personne {
 		this.nom = nom;
 		this.prenom = prenom;
 	}
-
-
-	public Personne(String string, String username2, String password2, String name2, String last_name2, String address2,
-			int i, String string2) {
+	
+	public Personne(int id,String username, String password, String nom, String prenom) {
+		super();
+		this.id=id;
+		this.username=username;
+		this.password=password;
+		this.nom = nom;
+		this.prenom = prenom;
 	}
-	
-	
+
 	public Personne(int id2, String nom2, String prenom2, String address2, String sex2, int age2) {
 		super();
 		this.id=id2;
@@ -70,6 +73,7 @@ public class Personne {
 		this.sex=sex2;
 		this.age=age2;
 	}
+	
 	public String getNom() {
 		return nom;
 	}
@@ -105,7 +109,6 @@ public class Personne {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
-	
 	public String getPrenom() {
 		return prenom;
 	}

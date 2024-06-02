@@ -16,9 +16,8 @@ public class GradebookDAO {
     }
 
     public boolean validateAdmin(String username, String password) throws SQLException {
-        String hashedUsername = hashString(username);
         String hashedPassword = hashString(password);
-        ResultSet rs = stmt.executeQuery("SELECT * FROM admin WHERE username = '" + hashedUsername + "' AND password = '" + hashedPassword + "'");
+        ResultSet rs = stmt.executeQuery("SELECT * FROM admin WHERE username = '" + username + "' AND password = '" + hashedPassword + "'");
         return rs.next();
     }
 
@@ -29,9 +28,8 @@ public class GradebookDAO {
     }
 
     public boolean validateStudent(String username, String password) throws SQLException {
-        String hashedUsername = hashString(username);
         String hashedPassword = hashString(password);
-        ResultSet rs = stmt.executeQuery("SELECT * FROM student WHERE username = '" + hashedUsername + "' AND password = '" + hashedPassword + "'");
+        ResultSet rs = stmt.executeQuery("SELECT * FROM student WHERE username = '" + username + "' AND password = '" + hashedPassword + "'");
         return rs.next();
     }
 

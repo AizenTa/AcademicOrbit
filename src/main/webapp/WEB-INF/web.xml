@@ -141,4 +141,34 @@
     <servlet-name>ModifierClasse</servlet-name>
     <url-pattern>/ModifierClasse</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>UpdateAdminController</display-name>
+    <servlet-name>UpdateAdminController</servlet-name>
+    <servlet-class>controller.UpdateAdminController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>UpdateAdminController</servlet-name>
+    <url-pattern>/UpdateAdminController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>SupprimerClasse</display-name>
+    <servlet-name>SupprimerClasse</servlet-name>
+    <servlet-class>controller.SupprimerClasse</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SupprimerClasse</servlet-name>
+    <url-pattern>/SupprimerClasse</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>ListeEtudiantClasse</display-name>
+    <servlet-name>ListeEtudiantClasse</servlet-name>
+    <servlet-class>controller.ListeEtudiantClasse</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ListeEtudiantClasse</servlet-name>
+    <url-pattern>/ListeEtudiantClasse</url-pattern>
+  </servlet-mapping>
 </web-app>

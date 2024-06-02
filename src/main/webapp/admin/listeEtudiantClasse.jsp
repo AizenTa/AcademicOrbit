@@ -1,7 +1,7 @@
 <%@page import="DAO.MaConnexion"%>
 <%@ page import="java.util.*, java.sql.*" %>
 <%@ page import="DAO.AdminDAO" %>
-<%@ page import="business.Classe" %>
+<%@ page import="business.Etudiant" %>
 <%
 	response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 	response.setHeader("Pragma", "no-cache");
@@ -14,10 +14,12 @@
 		 response.sendRedirect("../Login.jsp");
 	 }
 	 
+	int id = Integer.parseInt(request.getParameter("id"));
 	MaConnexion conn = new MaConnexion();
-    List<Classe> classes = new ArrayList<>();
+    List<Etudiant> etudiants = new ArrayList<>();
     AdminDAO dao = new AdminDAO(conn);
-    classes = dao.getAllClasseInfos();
+    etudiants = dao.getAllEtudiantClasse(id);
+    
 %>
 <!DOCTYPE html>
 <html>
@@ -163,9 +165,9 @@
     </style>
 </head>
 <body>
-    <h1>Professional Professors List</h1>
+    <h1>Professional Etudiant List</h1>
     <div class="add-link">
-        <a href="add-classe.jsp">Ajouter Classe</a>
+        <a href="add-etudiant.jsp">Ajouter Etudiant</a>
     </div>
     <form action="" method="GET" style="margin-bottom: 20px;">
         <input type="text" name="cne" placeholder="Search by Professor's CNE" style="padding: 8px; border-radius: 5px;">
@@ -174,21 +176,32 @@
     <table border="1">
         <tr>
             <th>ID</th>
+            <th>Prenom</th>
             <th>Nom</th>
-            <th>Filliere</th>
-            <th>Annee</th>
+            <th>Address</th>
+            <th>Sexe</th>
+            <th>Age</th>
+            <th>CNE d'Etudiant</th>
+			<th>Note finale d'Etudiant</th>
+			<th>Abscence d'Etudiant</th>
             <th>Actions</th>
         </tr>
-        <% for (Classe classe : classes) { %>
+        <% for (Etudiant etudiant : etudiants) { %>
             <tr>
-                <td><%= classe.getId() %></td>
-                <td><%= classe.getName() %></td>
-                <td><%= classe.getFilliere() %></td>
-                <td><%= classe.getGrade() %></td>
+                <td><%= etudiant.getId() %></td>
+                <td><%= etudiant.getNom() %></td>
+                <td><%= etudiant.getPrenom() %></td>
+                <td><%= etudiant.getAddress() %></td>
+                <td><%= etudiant.getSex() %></td>
+                <td><%= etudiant.getAge() %></td>
+                <td><%= etudiant.getCne_student() %></td>
+                <td><%= etudiant.getNote_finale() %></td>
+                <td><%= etudiant.getAbscence_hours() %></td>
                 <td>
-                    <a class="edit-link" href="edit-classe.jsp?id=<%= classe.getId() %>">Edit</a>
-                    <a class="delete-link" href="${pageContext.request.contextPath}/SupprimerClasse?id=<%= classe.getId() %>">Supprimer</a>                    
-                    <a class="add-link" href="listeEtudiantClasse.jsp?id=<%= classe.getId() %>">Voire Classe</a>                                   
+                    <a class="edit-link" href="edit-etudiant.jsp?id=<%= etudiant.getId() %>">Edit</a>
+                    <a class="delete-link" href="${pageContext.request.contextPath}/SupprimerEtudiant?id=<%= etudiant.getId() %>">Supprimer</a>                    
+                    <a class="add-link" href="${pageContext.request.contextPath}/?id=<%= etudiant.getId() %>">Affecter Classe</a>                    
+               
                 </td>
             </tr>
         <% } %>

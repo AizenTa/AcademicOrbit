@@ -1,28 +1,17 @@
 <%@page import="DAO.MaConnexion"%>
-<%@ page import="java.util.*, java.sql.*" %>
-<%@ page import="DAO.AdminDAO" %>
-<%@ page import="business.Classe" %>
+<%@page import="java.util.*, java.sql.*" %>
+<%@page import="DAO.AdminDAO" %>
+<%@page import="business.Module" %>
 <%
-	response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-	response.setHeader("Pragma", "no-cache");
-	response.setHeader("Expires", "0");
-	
-	String username = ""; 
-	 if(session.getAttribute("username")!=null){
-		 username = session.getAttribute("username").toString();
-	 }else{
-		 response.sendRedirect("../Login.jsp");
-	 }
-	 
-	MaConnexion conn = new MaConnexion();
-    List<Classe> classes = new ArrayList<>();
+    MaConnexion conn = new MaConnexion();
+    List<Module> modules = new ArrayList<>();
     AdminDAO dao = new AdminDAO(conn);
-    classes = dao.getAllClasseInfos();
+    modules = dao.getAllModulesInfos();
 %>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Professors List</title>
+    <title>Modules List</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -141,20 +130,20 @@
         }
         .edit-link, .delete-link {
             display: inline-block;
-            padding: 6px 10px; /* Adjusted padding */
-            border-radius: 3px; /* Rounded corners */
+            padding: 6px 10px;
+            border-radius: 3px;
             transition: background-color 0.3s;
-            margin-right: 5px; /* Smaller margin between buttons */
+            margin-right: 5px;
         }
         .edit-link {
-            background-color: #007bff; /* Blue color for edit */
+            background-color: #007bff;
             color: #fff;
         }
         .edit-link:hover {
             background-color: #0056b3;
         }
         .delete-link {
-            background-color: #dc3545; /* Red color for delete */
+            background-color: #dc3545;
             color: #fff;
         }
         .delete-link:hover {
@@ -163,32 +152,29 @@
     </style>
 </head>
 <body>
-    <h1>Professional Professors List</h1>
+    <h1>Modules List</h1>
     <div class="add-link">
-        <a href="add-classe.jsp">Ajouter Classe</a>
+        <a href="add-module.jsp">Add Module</a>
     </div>
     <form action="" method="GET" style="margin-bottom: 20px;">
-        <input type="text" name="cne" placeholder="Search by Professor's CNE" style="padding: 8px; border-radius: 5px;">
+        <input type="text" name="search" placeholder="Search by ID" style="padding: 8px; border-radius: 5px;">
         <button type="submit" style="padding: 8px 20px; border-radius: 5px; background-color: #007bff; color: #fff; border: none;">Search</button>
     </form>
     <table border="1">
         <tr>
             <th>ID</th>
-            <th>Nom</th>
-            <th>Filliere</th>
-            <th>Annee</th>
+            <th>Module Name</th>
+            <th>Nbr_heures</th>
             <th>Actions</th>
         </tr>
-        <% for (Classe classe : classes) { %>
+        <% for (Module module : modules) { %>
             <tr>
-                <td><%= classe.getId() %></td>
-                <td><%= classe.getName() %></td>
-                <td><%= classe.getFilliere() %></td>
-                <td><%= classe.getGrade() %></td>
+                <td><%= module.getId() %></td>
+                <td><%= module.getName() %></td>
+                <td><%= module.getNbr_heures() %></td>
                 <td>
-                    <a class="edit-link" href="edit-classe.jsp?id=<%= classe.getId() %>">Edit</a>
-                    <a class="delete-link" href="${pageContext.request.contextPath}/SupprimerClasse?id=<%= classe.getId() %>">Supprimer</a>                    
-                    <a class="add-link" href="listeEtudiantClasse.jsp?id=<%= classe.getId() %>">Voire Classe</a>                                   
+                    <a class="edit-link" href="edit-module.jsp?id=<%= module.getId() %>">Edit</a>
+                     <a class="delete-link" href="${pageContext.request.contextPath}/SupprimerModule?id=<%= module.getId() %>">Supprimer</a>
                 </td>
             </tr>
         <% } %>

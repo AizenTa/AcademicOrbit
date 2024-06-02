@@ -17,6 +17,8 @@ import business.Admin;
 import business.Classe;
 import business.Etudiant;
 import business.Professeur;
+import business.Statistics;
+import business.Module;
 
 public class AdminDAO {
 
@@ -64,7 +66,96 @@ public class AdminDAO {
 	        String hashed_password = hashString(admin_password);
 	    	stmt.executeUpdate("INSERT INTO admin (username,password,name, last_name) VALUES ('" + admin_username + "','" + hashed_password + "','" + nom + "','" + prenom +"')");			
 	    }
-	 
+	 public Statistics getStatistics() throws SQLException {
+	        int numberOfStudents = 0;
+	        int numberOfProfessors = 0;
+	        int numberOfClasses = 0;
+	        int numberOfModules = 0;
+	        int maleStudents = 0;
+	        int femaleStudents = 0;
+	        int maleProfessors = 0;
+	        int femaleProfessors = 0;
+
+	        // Requête pour le nombre d'étudiants
+	        ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS count FROM student");
+	        if (rs.next()) {
+	            numberOfStudents = rs.getInt("count");
+	        }
+
+	        // Requête pour la répartition des sexes des étudiants
+	        rs = stmt.executeQuery("SELECT sex, COUNT(*) AS count FROM student GROUP BY sex");
+	        while (rs.next()) {
+	            if ("Homme".equalsIgnoreCase(rs.getString("sex"))) {
+	                maleStudents = rs.getInt("count");
+	            } else if ("Femme".equalsIgnoreCase(rs.getString("sex"))) {
+	                femaleStudents = rs.getInt("count");
+	            }
+	        }
+
+	        // Requête pour le nombre de professeurs
+	        rs = stmt.executeQuery("SELECT COUNT(*) AS count FROM prof");
+	        if (rs.next()) {
+	            numberOfProfessors = rs.getInt("count");
+	        }
+
+	        // Requête pour la répartition des sexes des professeurs
+	        rs = stmt.executeQuery("SELECT sex, COUNT(*) AS count FROM prof GROUP BY sex");
+	        while (rs.next()) {
+	            if ("Homme".equalsIgnoreCase(rs.getString("sex"))) {
+	                maleProfessors = rs.getInt("count");
+	            } else if ("Femme".equalsIgnoreCase(rs.getString("sex"))) {
+	                femaleProfessors = rs.getInt("count");
+	            }
+	        }
+
+	        // Requête pour le nombre de classes
+	        rs = stmt.executeQuery("SELECT COUNT(*) AS count FROM classe");
+	        if (rs.next()) {
+	            numberOfClasses = rs.getInt("count");
+	        }
+
+	        // Requête pour le nombre de modules
+	        rs = stmt.executeQuery("SELECT COUNT(*) AS count FROM module");
+	        if (rs.next()) {
+	            numberOfModules = rs.getInt("count");
+	        }
+
+	        return new Statistics(numberOfStudents, numberOfProfessors, numberOfClasses, numberOfModules, maleStudents, femaleStudents, maleProfessors, femaleProfessors);
+	    }
+		
+		
+	    public Admin getAdminByUsername(String username) throws SQLException {
+	        ResultSet rs = null;
+	        Admin admin = null;
+	        try {
+	        	 rs = stmt.executeQuery("SELECT * FROM admin WHERE username = '" + username + "'");
+
+	            if (rs.next()) {
+	                admin = new Admin(
+	                    rs.getInt("id"),
+	                    rs.getString("username"),
+	                    rs.getString("password"),
+	                    rs.getString("name"),
+	                    rs.getString("last_name")
+	                );
+	            }
+	        } finally {
+	        }
+	        return admin;
+	    }
+
+	    public void updateAdmin(Admin admin) throws SQLException {
+	        try {
+	            String query = "UPDATE admin SET " +
+	                    "username = '" + admin.getUsername() + "', " +
+	                    "password = '" + hashString(admin.getPassword()) + "', " +
+	                    "name = '" + admin.getNom() + "', " +
+	                    "last_name = '" + admin.getPrenom() + "' " +
+	                    "WHERE id = " + admin.getId();
+	            stmt.executeUpdate(query);
+	        } finally {
+	        }
+	    }
 	 public List<Professeur> getAllProfsInfos() throws SQLException {
 		 List<Professeur> professors = new ArrayList<>();
 	     ResultSet rs = stmt.executeQuery("SELECT * FROM prof");
@@ -151,6 +242,40 @@ public class AdminDAO {
 			return etudiants;
 		}
 	 
+	 public List<Etudiant> getAllEtudiantClasse(int id) throws SQLException {
+			List<Etudiant> etudiants = new ArrayList<>();
+			List<Integer> ids = new ArrayList<>();
+			ResultSet rs = stmt.executeQuery("SELECT student_id FROM class_student WHERE class_id='"+id+"'");
+				while (rs.next()) {
+					int student_id = rs.getInt("student_id");
+					ids.add(student_id);
+				}
+			etudiants=getAllEtudiantById(ids);
+			return etudiants;
+		}
+	 
+	 public List<Etudiant> getAllEtudiantById(List<Integer> ids) throws SQLException {
+		 List<Etudiant> etudiants = new ArrayList<>();	
+		 for(int id : ids) {
+				ResultSet rs = stmt.executeQuery("SELECT * FROM student WHERE ID='"+id+"'");
+					while (rs.next()) {
+						Etudiant etudiant = new Etudiant(
+								rs.getInt("id"),
+								rs.getString("name"),
+								rs.getString("last_name"),
+								rs.getString("address"),
+								rs.getString("sex"),
+								rs.getInt("age"),
+								rs.getString("cne_student"),
+								rs.getFloat("note_finale"),
+								rs.getInt("abscence_hours")
+						); 
+						etudiants.add(etudiant);
+					}
+			}
+			return etudiants;
+			}
+	 
 	 public void modifierEtudiant(Etudiant etudiant, int id) throws SQLException { 
 		    String etudiant_username = etudiant.getUsername();
 	        String etudiant_password = etudiant.getPassword();
@@ -202,8 +327,28 @@ public class AdminDAO {
 				}
 			return classes;
 		}
-		 
-	private static String hashString(String input) {
+	 
+	 public List<Module> getAllModulesInfos() throws SQLException {
+			List<Module> modules = new ArrayList<>();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM module");
+			while (rs.next()) {
+				Module module = new Module(
+						rs.getInt("id"),
+						rs.getString("name"),
+						rs.getInt("nbr_heures")
+				);
+				modules.add(module);
+			}
+			return modules;
+		}
+	 public void supprimerClasse(String id) throws SQLException {  
+		stmt.executeUpdate("DELETE FROM classe WHERE ID='" + id+"'");
+		stmt.executeUpdate("DELETE FROM class_student WHERE ID='" + id+"'");
+		stmt.executeUpdate("DELETE FROM classe_module WHERE ID='" + id+"'");
+	 }
+	 
+	 
+	public String hashString(String input) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			byte[] encodedHash = digest.digest(input.getBytes());
@@ -239,7 +384,7 @@ public class AdminDAO {
 	    }
 	    return timetable;
 	}
-
+	
 	private void emploisClasse(int classeId, int moduleId) throws SQLException {
         List<Integer> availableSlots = new ArrayList<>();
         List<Integer> occupiedSlots = new ArrayList<>();

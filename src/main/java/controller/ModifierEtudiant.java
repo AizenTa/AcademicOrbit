@@ -48,5 +48,5 @@ public class ModifierEtudiant extends HttpServlet {
 	            response.sendRedirect("./admin/etudiant-liste.jsp");
 	 
 	        }else response.sendRedirect("../Login.jsp");
-	        }
+	   }
 }

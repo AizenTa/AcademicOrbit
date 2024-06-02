@@ -35,7 +35,7 @@
 </head>
 <body>
     <h1>Modifier Classe</h1>
-    <form action="${pageContext.request.contextPath}/Modifier" method="post">
+    <form action="${pageContext.request.contextPath}/ModifierClasse" method="post">
         <input type="hidden" name="id" value="<%= classe.getId() %>">
         <label>Name : </label>
         <input type="text" name="name" value="<%= classe.getName() %>" required><br>

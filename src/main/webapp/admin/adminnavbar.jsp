@@ -203,7 +203,7 @@
                         <img src="../img/student.png" class="img-icon" alt="students icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Students</span> 
                     </a>
-                    <a href="#" id="modules-link" class="nav_link"> 
+                    <a href="module-liste.jsp" id="modules-link" class="nav_link"> 
                         <img src="../img/books.png" class="img-icon" alt="modules icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Modules</span> 
                     </a>
