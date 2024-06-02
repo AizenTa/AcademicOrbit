@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+import business.Admin;
+import business.Classe;
+import business.Etudiant;
 import business.Professeur;
 
 public class AdminDAO {
@@ -33,6 +36,35 @@ public class AdminDAO {
 	}
 	    
 /////////////////// Methodes
+
+	public List<Admin> getAllAdminsInfos() throws SQLException {
+		List<Admin> admins = new ArrayList<>();
+		ResultSet rs = stmt.executeQuery("SELECT * FROM admin");
+			while (rs.next()) {
+				Admin admin = new Admin(
+						rs.getInt("id"),
+						rs.getString("name"),
+						rs.getString("last_name")
+				); 
+				admins.add(admin);
+			}
+		return admins;
+	}
+	
+	public void supprimerAdmin(String id) throws SQLException {
+        stmt.executeUpdate("DELETE FROM admin WHERE id='" + id + "'");
+    }
+	 
+	 public void ajouterAdmin(Admin admin) throws SQLException {
+	        String admin_username = admin.getUsername();
+	        String admin_password = admin.getPassword();
+	        String nom = admin.getNom();
+	        String prenom = admin.getPrenom(); 
+	        
+	        String hashed_password = hashString(admin_password);
+	    	stmt.executeUpdate("INSERT INTO admin (username,password,name, last_name) VALUES ('" + admin_username + "','" + hashed_password + "','" + nom + "','" + prenom +"')");			
+	    }
+	 
 	 public List<Professeur> getAllProfsInfos() throws SQLException {
 		 List<Professeur> professors = new ArrayList<>();
 	     ResultSet rs = stmt.executeQuery("SELECT * FROM prof");
@@ -83,7 +115,94 @@ public class AdminDAO {
 	 public void supprimerProf(String id) throws SQLException {  
 		stmt.executeUpdate("DELETE FROM prof WHERE ID='" + id+"'");
 	 }
+	 
+	 /// Etudiant
+	 public void ajouterEtudiant(Etudiant etudiant) throws SQLException {
+	        String etudiant_username = etudiant.getUsername();
+	        String etudiant_password = etudiant.getPassword();
+	        String nom = etudiant.getNom();
+	        String prenom = etudiant.getPrenom(); 
+	        String address = etudiant.getAddress();
+	        String sex = etudiant.getSex();
+	        int age = etudiant.getAge();
+	        String cne_etudiant = etudiant.getCne_student(); 
+	        
+	        String hashed_password = hashString(etudiant_password);
+	    	stmt.executeUpdate("INSERT INTO student (username,password,name, last_name, address, sex, age, cne_student) VALUES ('" + etudiant_username + "','" + hashed_password + "','" + nom + "','" + prenom + "','" + address + "','" + sex + "'," + age + ",'" + cne_etudiant + "')");			
+	    } 
+	
+	 public List<Etudiant> getAllEtudiantInfos() throws SQLException {
+			List<Etudiant> etudiants = new ArrayList<>();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM student");
+				while (rs.next()) {
+					Etudiant etudiant = new Etudiant(
+							rs.getInt("id"),
+							rs.getString("name"),
+							rs.getString("last_name"),
+							rs.getString("address"),
+							rs.getString("sex"),
+							rs.getInt("age"),
+							rs.getString("cne_student"),
+							rs.getFloat("note_finale"),
+							rs.getInt("abscence_hours")
+					); 
+					etudiants.add(etudiant);
+				}
+			return etudiants;
+		}
+	 
+	 public void modifierEtudiant(Etudiant etudiant, int id) throws SQLException { 
+		    String etudiant_username = etudiant.getUsername();
+	        String etudiant_password = etudiant.getPassword();
+	        String nom = etudiant.getNom();
+	        String prenom = etudiant.getPrenom(); 
+	        String address = etudiant.getAddress();
+	        String sex = etudiant.getSex();
+	        int age = etudiant.getAge();
+	        String cne_etudiant = etudiant.getCne_student(); 
+	        int abscence_hours = etudiant.getAbscence_hours();
+	        String hashed_password = hashString(etudiant_password);
+         stmt.executeUpdate("UPDATE student SET username = '" + etudiant_username + "',password = '" + hashed_password + "',name = '" + nom + "', last_name = '" + prenom + "', address = '" + address + "', sex = '" + sex + "', age = '" + age + "', cne_student = '" + cne_etudiant + "', abscence_hours = '" + abscence_hours + "' WHERE id = " + id);
+	 }
+	 
 
+	 public void supprimerEtudiant(String id) throws SQLException {  
+			stmt.executeUpdate("DELETE FROM student WHERE ID='" + id+"'");
+		 }
+	 
+	 // classe
+	 
+	 public void ajouterClasse(Classe classe) throws SQLException {
+	        String classe_name = classe.getName();
+	        String classe_filliere = classe.getFilliere();
+	        String classe_annee = classe.getGrade(); 
+	        
+	    	stmt.executeUpdate("INSERT INTO classe (name,filliere,grade) VALUES ('" + classe_name + "','" + classe_filliere + "','" + classe_annee + "')");			
+	    } 
+	
+	 public void modifierClasse(Classe classe, int id) throws SQLException { 
+		    String nom = classe.getName();
+	        String filliere = classe.getFilliere(); 
+	        String annee = classe.getGrade();
+	        
+      stmt.executeUpdate("UPDATE classe SET name = '" + nom + "',filliere = '" + filliere + "',grade = '" + annee + "' WHERE id = " + id);
+	 }
+	 
+	 public List<Classe> getAllClasseInfos() throws SQLException {
+			List<Classe> classes = new ArrayList<>();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM classe");
+				while (rs.next()) {
+					Classe classe = new Classe(
+							rs.getInt("id"),
+							rs.getString("name"),
+							rs.getString("filliere"),
+							rs.getString("grade")
+					); 
+					classes.add(classe);
+				}
+			return classes;
+		}
+		 
 	private static String hashString(String input) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");

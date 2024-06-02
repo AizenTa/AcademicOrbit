@@ -58,7 +58,17 @@ public class Personne {
 
 	public Personne(String string, String username2, String password2, String name2, String last_name2, String address2,
 			int i, String string2) {
-		// TODO Auto-generated constructor stub
+	}
+	
+	
+	public Personne(int id2, String nom2, String prenom2, String address2, String sex2, int age2) {
+		super();
+		this.id=id2;
+		this.nom=nom2;
+		this.prenom=prenom2;
+		this.address=address2;
+		this.sex=sex2;
+		this.age=age2;
 	}
 	public String getNom() {
 		return nom;
@@ -95,6 +105,7 @@ public class Personne {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
+	
 	public String getPrenom() {
 		return prenom;
 	}

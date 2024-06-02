@@ -19,7 +19,15 @@ public class Classe {
 		this.grade = grade;
 	}
 
-	
+	public Classe(int id,String nom, String filliere, String grade) {
+		super();
+		this.id=id;
+		this.nom = nom;
+		this.filliere = filliere;
+		this.grade = grade;
+	}
+
+
 	public int getId() {
 		return id;
 	}

@@ -191,7 +191,7 @@
                         <img src="../img/dashboard.png" class="img-icon" alt="dashboard icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Dashboard</span> 
                     </a>
-                    <a href="admin.jsp" id="admins-link" class="nav_link"> 
+                    <a href="admin-liste.jsp" id="admins-link" class="nav_link"> 
                         <img src="../img/admin.png" class="img-icon" alt="admins icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Admins</span> 
                     </a>
@@ -199,7 +199,7 @@
                         <img src="../img/teacher.png" class="img-icon" alt="professors icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Professors</span> 
                     </a>
-                    <a href="#" id="students-link" class="nav_link"> 
+                    <a href="etudiant-liste.jsp" id="students-link" class="nav_link"> 
                         <img src="../img/student.png" class="img-icon" alt="students icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Students</span> 
                     </a>
@@ -207,7 +207,7 @@
                         <img src="../img/books.png" class="img-icon" alt="modules icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Modules</span> 
                     </a>
-                    <a href="#" id="classes-link" class="nav_link"> 
+                    <a href="classe-liste.jsp" id="classes-link" class="nav_link"> 
                         <img src="../img/class.png" class="img-icon" alt="classes icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Classes</span> 
                     </a> 

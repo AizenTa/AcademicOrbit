@@ -20,6 +20,17 @@ public class Etudiant extends Personne{
 		this.abscence_hours=abscence_hours;
 	}
 	
+	public Etudiant(int id,String nom, String prenom, String address, String sex, int age, String cne_student,float note_finale,int abscence_hours) {
+		super(id,nom, prenom, address, sex, age);
+		this.cne_student = cne_student;
+		this.note_finale=note_finale;
+		this.abscence_hours=abscence_hours;
+	}
+	public Etudiant(int id,String nom, String prenom, String address, String sex, int age, String cne_student,int abscence_hours) {
+		super(id,nom, prenom, address, sex, age);
+		this.cne_student = cne_student;
+		this.abscence_hours=abscence_hours;
+	}
 
 	public Etudiant(String username,String password,String nom, String prenom, String address, String sex, int age, String cne_student,int abscence_hours) {
 		super(username,password,nom, prenom, address, sex, age);
@@ -27,6 +38,16 @@ public class Etudiant extends Personne{
 		this.abscence_hours=abscence_hours;
 	}
 	
+
+
+	public Etudiant(String username,String password,String nom, String prenom, String address, String sex, int age, String cne_student) {
+		super(username,password,nom, prenom, address, sex, age);
+		this.cne_student = cne_student;
+	}
+	
+
+
+
 	// getter & setter 
 	public String getId_student() {
 		return cne_student;
@@ -79,10 +100,4 @@ public class Etudiant extends Personne{
 	}
 
 
-
-
-
-	
-	
-	
 }
