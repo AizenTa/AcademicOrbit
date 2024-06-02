@@ -1,4 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+	response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+	response.setHeader("Pragma", "no-cache");
+	response.setHeader("Expires", "0");
+	String username = ""; 
+	 if(session.getAttribute("username")!=null){
+		 username = session.getAttribute("username").toString();
+	 }else{
+		 response.sendRedirect("../Login.jsp");
+	 }
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -187,27 +198,15 @@
                     <span class="nav_logo-name">Academic Orbit</span> 
                 </a>
                 <div class="nav_list">
-                    <a href="admin.jsp" id="admin-link" class="nav_link"> 
+                    <a href="dashbordProf.jsp" id="prof-link" class="nav_link"> 
                         <img src="../img/dashboard.png" class="img-icon" alt="dashboard icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Dashboard</span> 
                     </a>
-                    <a href="admin.jsp" id="admins-link" class="nav_link"> 
+                    <a href="profEmplois.jsp" id="emplois-link" class="nav_link"> 
                         <img src="../img/admin.png" class="img-icon" alt="admins icon" style="width: 30px; height: 30px; margin-left: 5%">
-                        <span class="nav_name">Admins</span> 
+                        <span class="nav_name">Emplois De Temps</span> 
                     </a>
-                    <a href="prof-liste.jsp" id="professors-link" class="nav_link"> 
-                        <img src="../img/teacher.png" class="img-icon" alt="professors icon" style="width: 30px; height: 30px; margin-left: 5%">
-                        <span class="nav_name">Professors</span> 
-                    </a>
-                    <a href="#" id="students-link" class="nav_link"> 
-                        <img src="../img/student.png" class="img-icon" alt="students icon" style="width: 30px; height: 30px; margin-left: 5%">
-                        <span class="nav_name">Students</span> 
-                    </a>
-                    <a href="#" id="modules-link" class="nav_link"> 
-                        <img src="../img/books.png" class="img-icon" alt="modules icon" style="width: 30px; height: 30px; margin-left: 5%">
-                        <span class="nav_name">Modules</span> 
-                    </a>
-                    <a href="#" id="classes-link" class="nav_link"> 
+                    <a href="classesNotes" id="classes-link" class="nav_link"> 
                         <img src="../img/class.png" class="img-icon" alt="classes icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Classes</span> 
                     </a> 
@@ -260,10 +259,10 @@
             }
 
             // Appliquer les styles en fonction de la page actuelle
-            if (currentPage === 'admin.jsp') {
-                setActiveLink('admin-link');
-            } else if (currentPage === 'prof-liste.jsp') {
-                setActiveLink('professors-link');
+            if (currentPage === 'dashbordProf.jsp') {
+                setActiveLink('prof-link');
+            } else if (currentPage === 'profEmplois.jsp') {
+                setActiveLink('emplois-link');
             } // Ajoutez d'autres conditions pour chaque page
 
         });

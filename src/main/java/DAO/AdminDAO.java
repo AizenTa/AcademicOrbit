@@ -24,6 +24,7 @@ public class AdminDAO {
 	
     static Random rand = new Random(); 
     int i,j,k,m,n;
+    private static final String[] DAYS ={"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"};
 
 /////////////////// Constructor
 	public AdminDAO(MaConnexion connexion) {
@@ -82,35 +83,7 @@ public class AdminDAO {
 	 public void supprimerProf(String id) throws SQLException {  
 		stmt.executeUpdate("DELETE FROM prof WHERE ID='" + id+"'");
 	 }
-	 
-	 
-	 
-	 public void ajouterAdmin() throws SQLException {
-		char reponse = 'o';
-		while (reponse == 'o') {
-			System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||| Ajoutez Admin |||||||||||||||||||||||||||||||||||||||||||||||||||");
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-			System.out.print("| Entrer username : ");
-			String admin_username = sc.nextLine();
-			System.out.print("| Entrer password : ");
-			String admin_password = sc.nextLine();
-			System.out.print("| Entrer nom : ");
-			String admin_nom = sc.nextLine();
-			System.out.print("| Entrer prenom : ");
-			String admin_prenom = sc.nextLine();
 
-			String hashed_username = hashString(admin_username);
-			String hashed_password = hashString(admin_password);
-
-			stmt.executeUpdate("INSERT INTO admin (username, password, name, last_name) VALUES ('" + hashed_username + "','" + hashed_password + "','" + admin_nom + "','" + admin_prenom + "')");
-			System.out.println("| + => Vous avez bien ajoutez " + admin_nom + " " + admin_prenom);
-			System.out.print("| Voulez vous ajoutez un nouveau admin (o pour oui / n pour non ) : ");
-			reponse = sc.next().charAt(0);
-			sc.nextLine();
-			System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-
-		}
-	}
 	private static String hashString(String input) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -121,7 +94,6 @@ public class AdminDAO {
 		}
 	}
 
-	// Helper method to convert byte array to hex string
 	private static String bytesToHex(byte[] hash) {
 		StringBuilder hexString = new StringBuilder(2 * hash.length);
 		for (int i = 0; i < hash.length; i++) {
@@ -134,70 +106,22 @@ public class AdminDAO {
 		return hexString.toString();
 	}
 
-	public void addClasse() {
-	    char reponse = 'o';
-	    while (reponse == 'o') {
-	        System.out.println("||||||||||||||||||||||||||||||||||||||||||||||| Ajoutez la classe ||||||||||||||||||||||||||||||||||||||||||||||||");
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer le nom de la classe  :");
-	        String name_classe = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer la filiere de la classe : ");
-	        String filiere_classe = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("|Entrer le grade de la classe : ");
-	        String grade_classe = sc.nextLine();
-
-	        try {
-	            stmt.executeUpdate("INSERT INTO classe (name, filliere, grade) VALUES ('" + name_classe + "','" + filiere_classe + "','" + grade_classe + "')", Statement.RETURN_GENERATED_KEYS);
-
-	            ResultSet generatedKeys = stmt.getGeneratedKeys();
-	            int classId = -1;
-	            if (generatedKeys.next()) {
-	                classId = generatedKeys.getInt(1);
-	            } else {
-	                throw new SQLException("Failed to get the generated class ID.");
-	            }
-
-	            char reponse_module = 'o';
-	            while (reponse_module == 'o') {
-					System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-					System.out.println("| |||||||||||||||||||||||||||||||||  Ajouter un module pour cette classe |||||||||||||||||||||||||||||||||||||||| ");
-					System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-					System.out.print("| Choisir l'id de ce module : ");
-	                int module_id = sc.nextInt();
-					System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                boolean moduleExists = checkIfModuleExists(module_id);
-
-	                if (moduleExists) {
-	                    stmt.executeUpdate("INSERT INTO classe_module (classe_id, module_id) VALUES ('" + classId + "','" + module_id + "')");
-	                	emploisClasse(classId,module_id);
-	                } else {
-	                    System.out.println("Module with ID " + module_id + " does not exist. Please add the module first.");
-	                }
-
-	                System.out.print("| Voulez-vous ajouter un autre module à cette classe? (si oui, tapez Oui, si non, tapez n'importe quoi..) : ");
-	                reponse_module = sc.next().charAt(0);
-
-	                sc.nextLine();
-	            }
-				System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-	            System.out.print("| Voulez-vous ajouter un autre classe? (si oui, tapez Oui, si non, tapez n'importe quoi..)");
-	            reponse = sc.next().charAt(0);
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-	            sc.nextLine();
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
+	public String[][] showProfessorTimetable(int profId) throws SQLException {
+	    String[][] timetable = new String[8][5];   
+	    ResultSet resultSet = stmt.executeQuery("SELECT salle_id, module_id, day_of_week, start_time, classe_id FROM EmploisClasses WHERE prof_id = " + profId);
+	    while (resultSet.next()) {
+	        int classe_id = resultSet.getInt("classe_id");
+	        int salle_id = resultSet.getInt("salle_id");
+	        int module_id = resultSet.getInt("module_id");
+	        String day = resultSet.getString("day_of_week");
+	        int startTime = resultSet.getInt("start_time");
+	        int indexDay = Arrays.asList(DAYS).indexOf(day);
+	        timetable[startTime][indexDay] = "Salle " + salle_id + " Module " + module_id + " Classe " + classe_id;
 	    }
+	    return timetable;
 	}
-	
-	
-	
-    private static final String[] DAYS = {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"};
-	
-	
-    private void emploisClasse(int classeId, int moduleId) throws SQLException {
+
+	private void emploisClasse(int classeId, int moduleId) throws SQLException {
         List<Integer> availableSlots = new ArrayList<>();
         List<Integer> occupiedSlots = new ArrayList<>();
         int[][] emplois = new int[5][8];
@@ -279,7 +203,6 @@ public class AdminDAO {
         }
     }
 
-	
     private boolean canProfessorTeach(int profId, int day, int period) throws SQLException {
         int continuousHours = 0;
 
@@ -307,7 +230,6 @@ public class AdminDAO {
         return continuousHours < 4;
     }
 
-	
 	private int nbr_heures_module(int module_id) throws SQLException {
         ResultSet resultSet = stmt.executeQuery("SELECT nbr_heures FROM module WHERE id = "+module_id);
         if (resultSet.next()) {
@@ -316,7 +238,6 @@ public class AdminDAO {
             throw new SQLException("Course not found with ID: " + module_id);
         }
 	}
-	
 	
 	private void enregistrerEmploi(int classeId, int moduleId, int[][] emploi, int salleId) throws SQLException {
 	    for (int day = 0; day < DAYS.length; day++) {
@@ -346,7 +267,6 @@ public class AdminDAO {
 	    }
 	}
 	
-
 	private int getRandomSalle() throws SQLException {
 	    ResultSet rs = stmt.executeQuery("SELECT id_salle FROM Salles ORDER BY RAND() LIMIT 1");
 	    if (rs.next()) {
@@ -355,8 +275,6 @@ public class AdminDAO {
 	        throw new SQLException("No rooms available.");
 	    }
 	}
-
-	
 	
 	private boolean isProfessorAvailable(int profId, int day, int period) throws SQLException {
 	    ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS count FROM EmploisClasses WHERE prof_id = " + profId +
@@ -375,8 +293,6 @@ public class AdminDAO {
 	    }
 	    return false;
 	}
-
-	
 	
 	public void showClassTimetable(int classeId) throws SQLException {
 	    String[][] timetable = new String[8][5]; // Inverted to have hours in columns
@@ -394,27 +310,6 @@ public class AdminDAO {
 
 	    printTimetable(timetable, "Timetable for class ID: " + classeId);
 	}
-
-	
-	public void showProfessorTimetable(int profId) throws SQLException {
-	    String[][] timetable = new String[8][5]; // Inverted to have hours in columns
-	    
-	    ResultSet resultSet = stmt.executeQuery("SELECT salle_id, module_id ,day_of_week, start_time, classe_id FROM EmploisClasses WHERE prof_id = " + profId);
-	    while (resultSet.next()) {
-	    	int classe_id = resultSet.getInt("classe_id");
-	        int salle_id = resultSet.getInt("salle_id");
-	        int module_id = resultSet.getInt("module_id");
-	        String day = resultSet.getString("day_of_week");
-	        int startTime = resultSet.getInt("start_time");
-	        int indexDay = Arrays.asList(DAYS).indexOf(day);
-
-	        
-	        timetable[startTime][indexDay] = "salle " + salle_id + " module" + module_id + " classe" + classe_id; // Simplified course display
-	    }
-	    
-	    printTimetable(timetable, "Timetable for professor ID: " + profId);
-	}
-
 	
 	public void showRoomTimetable(int salleId) throws SQLException {
 	    String[][] timetable = new String[8][5]; // Inverted to have hours in columns
@@ -431,6 +326,157 @@ public class AdminDAO {
 
 	    printTimetable(timetable, "Timetable for room ID: " + salleId);
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 
+	 
+	 
+	 public void ajouterAdmin() throws SQLException {
+		char reponse = 'o';
+		while (reponse == 'o') {
+			System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||| Ajoutez Admin |||||||||||||||||||||||||||||||||||||||||||||||||||");
+			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
+			System.out.print("| Entrer username : ");
+			String admin_username = sc.nextLine();
+			System.out.print("| Entrer password : ");
+			String admin_password = sc.nextLine();
+			System.out.print("| Entrer nom : ");
+			String admin_nom = sc.nextLine();
+			System.out.print("| Entrer prenom : ");
+			String admin_prenom = sc.nextLine();
+
+			String hashed_username = hashString(admin_username);
+			String hashed_password = hashString(admin_password);
+
+			stmt.executeUpdate("INSERT INTO admin (username, password, name, last_name) VALUES ('" + hashed_username + "','" + hashed_password + "','" + admin_nom + "','" + admin_prenom + "')");
+			System.out.println("| + => Vous avez bien ajoutez " + admin_nom + " " + admin_prenom);
+			System.out.print("| Voulez vous ajoutez un nouveau admin (o pour oui / n pour non ) : ");
+			reponse = sc.next().charAt(0);
+			sc.nextLine();
+			System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
+
+		}
+	}
+	
+	public void addClasse() {
+	    char reponse = 'o';
+	    while (reponse == 'o') {
+	        System.out.println("||||||||||||||||||||||||||||||||||||||||||||||| Ajoutez la classe ||||||||||||||||||||||||||||||||||||||||||||||||");
+			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
+	        System.out.print("| Entrer le nom de la classe  :");
+	        String name_classe = sc.nextLine();
+			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
+	        System.out.print("| Entrer la filiere de la classe : ");
+	        String filiere_classe = sc.nextLine();
+			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
+	        System.out.print("|Entrer le grade de la classe : ");
+	        String grade_classe = sc.nextLine();
+
+	        try {
+	            stmt.executeUpdate("INSERT INTO classe (name, filliere, grade) VALUES ('" + name_classe + "','" + filiere_classe + "','" + grade_classe + "')", Statement.RETURN_GENERATED_KEYS);
+
+	            ResultSet generatedKeys = stmt.getGeneratedKeys();
+	            int classId = -1;
+	            if (generatedKeys.next()) {
+	                classId = generatedKeys.getInt(1);
+	            } else {
+	                throw new SQLException("Failed to get the generated class ID.");
+	            }
+
+	            char reponse_module = 'o';
+	            while (reponse_module == 'o') {
+					System.out.println("+----------------------------------------------------------------------------------------------------------------+");
+					System.out.println("| |||||||||||||||||||||||||||||||||  Ajouter un module pour cette classe |||||||||||||||||||||||||||||||||||||||| ");
+					System.out.println("+----------------------------------------------------------------------------------------------------------------+");
+					System.out.print("| Choisir l'id de ce module : ");
+	                int module_id = sc.nextInt();
+					System.out.println("+----------------------------------------------------------------------------------------------------------------+");
+	                boolean moduleExists = checkIfModuleExists(module_id);
+
+	                if (moduleExists) {
+	                    stmt.executeUpdate("INSERT INTO classe_module (classe_id, module_id) VALUES ('" + classId + "','" + module_id + "')");
+	                	emploisClasse(classId,module_id);
+	                } else {
+	                    System.out.println("Module with ID " + module_id + " does not exist. Please add the module first.");
+	                }
+
+	                System.out.print("| Voulez-vous ajouter un autre module à cette classe? (si oui, tapez Oui, si non, tapez n'importe quoi..) : ");
+	                reponse_module = sc.next().charAt(0);
+
+	                sc.nextLine();
+	            }
+				System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
+	            System.out.print("| Voulez-vous ajouter un autre classe? (si oui, tapez Oui, si non, tapez n'importe quoi..)");
+	            reponse = sc.next().charAt(0);
+				System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
+	            sc.nextLine();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+	
+	
+	
+    
+	
+	
+    
 
 
 	private void printTimetable(String[][] timetable, String title) {

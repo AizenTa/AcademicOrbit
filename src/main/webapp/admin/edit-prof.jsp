@@ -3,6 +3,16 @@
 <%@page import="DAO.MaConnexion"%>
 
 <%
+	response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+	response.setHeader("Pragma", "no-cache");
+	response.setHeader("Expires", "0");
+	String username = ""; 
+	 if(session.getAttribute("username")!=null){
+		 username = session.getAttribute("username").toString();
+	 }else{
+		 response.sendRedirect("../Login.jsp");
+	 }
+	 
     int id = Integer.parseInt(request.getParameter("id"));
     Professeur prof = null;
 
@@ -28,9 +38,9 @@
     <form action="${pageContext.request.contextPath}/Modifier" method="post">
         <input type="hidden" name="id" value="<%= prof.getId() %>">
         <label>Username:</label>
-        <input type="text" name="username" value="<%= prof.getUsername() %>" required><br>
+        <input type="text" name="username" required><br>
         <label>Password:</label>
-        <input type="password" name="password" value="<%= prof.getPassword() %>" required><br>
+        <input type="password" name="password" required><br>
         <label>Name:</label>
         <input type="text" name="name" value="<%= prof.getNom() %>" required><br>
         <label>Last Name:</label>
@@ -38,16 +48,13 @@
         <label>Address:</label>
         <input type="text" name="address" value="<%= prof.getAddress() %>" required><br>
         
-         <label>Sexe :</label>
-            <div class="radio-group">
-            	<c:if test="${prof.getSex()==Homme}">
-                	<label for="female"><input type="radio" id="female" name="sex" value="Femme" > Femme</label>
-                	<label for="male"><input type="radio" id="male" name="sex" value="Homme" checked> Homme</label>
-                </c:if>
-                  	<c:if test="${prof.getSex()==Femme}">
-                	<label for="female"><input type="radio" id="female" name="sex" value="Femme" checked> Femme</label>
-                	<label for="male"><input type="radio" id="male" name="sex" value="Homme" > Homme</label>
-                </c:if>
+           <div class="radio-group">
+                <label for="male">
+                    <input type="radio" id="male" name="sex" value="Homme" <%= "Homme".equals(prof.getSex()) ? "checked" : "" %>> Homme
+                </label>
+                <label for="female">
+                    <input type="radio" id="female" name="sex" value="Femme" <%= "Femme".equals(prof.getSex()) ? "checked" : "" %>> Femme
+                </label>
             </div>
         
         <label>Age:</label>

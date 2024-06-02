@@ -33,16 +33,6 @@
   </servlet-mapping>
   <servlet>
     <description></description>
-    <display-name>AjouterProf</display-name>
-    <servlet-name>AjouterProf</servlet-name>
-    <servlet-class>controller.adminServletes.AjouterProf</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>AjouterProf</servlet-name>
-    <url-pattern>/AjouterProf</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <description></description>
     <display-name>Supprimer</display-name>
     <servlet-name>Supprimer</servlet-name>
     <servlet-class>controller.Supprimer</servlet-class>
@@ -60,5 +50,15 @@
   <servlet-mapping>
     <servlet-name>Modifier</servlet-name>
     <url-pattern>/Modifier</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>ProfEmplois</display-name>
+    <servlet-name>ProfEmplois</servlet-name>
+    <servlet-class>controller.profservlets.ProfEmplois</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ProfEmplois</servlet-name>
+    <url-pattern>/ProfEmplois</url-pattern>
   </servlet-mapping>
 </web-app>

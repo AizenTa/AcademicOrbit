@@ -13,7 +13,7 @@ public class MaConnexion {
 	public MaConnexion() throws SQLException, ClassNotFoundException {
 		super();
 		Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/gradebook", "root", "");
+		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/gradebook", "debian-sys-maint", "jeEWLyhuEQIKTYMS");
 		stmt = conn.createStatement();
 	}
 
