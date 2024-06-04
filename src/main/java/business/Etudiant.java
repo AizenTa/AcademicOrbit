@@ -26,6 +26,13 @@ public class Etudiant extends Personne{
 		this.note_finale=note_finale;
 		this.abscence_hours=abscence_hours;
 	}
+	public Etudiant(int id,String nom, String prenom, String address, String sex, int age, String cne_student,float note_finale,int abscence_hours, String classe_student) {
+		super(id,nom, prenom, address, sex, age);
+		this.cne_student = cne_student;
+		this.note_finale=note_finale;
+		this.abscence_hours=abscence_hours;
+		this.classe_student=classe_student;
+	}
 	public Etudiant(int id,String nom, String prenom, String address, String sex, int age, String cne_student,int abscence_hours) {
 		super(id,nom, prenom, address, sex, age);
 		this.cne_student = cne_student;

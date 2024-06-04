@@ -21,6 +21,27 @@ public class ProfessorsDAO {
 	}
 	
 	// Methods
+	
+	public Professeur getProfByUsername(String username) throws SQLException {
+        ResultSet rs = null;
+        Professeur prof = null;
+        try {
+        	 rs = stmt.executeQuery("SELECT * FROM prof WHERE username = '" + username + "'");
+
+            if (rs.next()) {
+                prof = new Professeur(
+                    rs.getInt("id"),
+                    rs.getString("username"),
+                    rs.getString("password"),
+                    rs.getString("name"),
+                    rs.getString("last_name")
+                );
+            }
+        } finally {
+        }
+        return prof;
+    }
+	
 		// consulter les Modules du Professeur.
 	public void consulterProfModule(int id) {
 	    try {

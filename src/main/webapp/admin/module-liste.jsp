@@ -173,8 +173,10 @@
                 <td><%= module.getName() %></td>
                 <td><%= module.getNbr_heures() %></td>
                 <td>
-                    <a class="edit-link" href="edit-module.jsp?id=<%= module.getId() %>">Edit</a>
+                     <a class="edit-link" href="edit-module.jsp?id=<%= module.getId() %>">Edit</a>
                      <a class="delete-link" href="${pageContext.request.contextPath}/SupprimerModule?id=<%= module.getId() %>">Supprimer</a>
+                     <a class="add-link" href="${pageContext.request.contextPath}/Afficher?id=<%= module.getId() %>">voir les classes</a>
+        
                 </td>
             </tr>
         <% } %>

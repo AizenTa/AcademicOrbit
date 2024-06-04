@@ -14,6 +14,14 @@ public class Professeur extends Personne{
 		this.cne_prof = cne_prof;
 	}
 
+	public Professeur(int id,String username, String password,String nom, String prenom) {
+		super(id,username,password,nom, prenom);
+	}
+	
+	public Professeur(int id,String nom, String prenom,String cne_prof) {
+		super(id,nom, prenom);
+		this.cne_prof = cne_prof;
+	}
 	public Professeur(String username, String password,String nom, String prenom, String address, String sex, int age, String cne_prof) {
 		super(username,password,nom, prenom, address, sex, age);
 		this.cne_prof = cne_prof;

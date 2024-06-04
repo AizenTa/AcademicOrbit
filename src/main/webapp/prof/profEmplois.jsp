@@ -1,4 +1,8 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ page import="java.util.*, java.sql.*" %>
+<%@ page import="DAO.AdminDAO, business.Professeur" %>
+<%@page import="DAO.MaConnexion"%>
+
 <%
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setHeader("Pragma", "no-cache");
@@ -15,16 +19,70 @@
 <head>
 <meta charset="UTF-8">
 <title>Emploi du Temps du Professeur</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        padding: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 20px;
+        background-color: #ffffff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+        width: 100px;
+        height: 80px;
+        text-align: center;
+        border: 1px solid #dddddd;
+        box-sizing: border-box;
+    }
+    th {
+        background-color: #4CAF50;
+        color: white;
+        font-weight: bold;
+        padding: 10px;
+    }
+    td {
+        padding: 5px;
+    }
+    .timetable-cell {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+    .timetable-cell div {
+        margin: 2px 0;
+    }
+    .empty-cell {
+        background-color: #f9f9f9;
+    }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
+</style>
 </head>
 <body>
 
 <% 
-    String[][] timetable = (String[][]) request.getAttribute("timetable");
+int id = Integer.parseInt(request.getParameter("id"));
+    MaConnexion connexion = new MaConnexion();
+    AdminDAO adminDAO = new AdminDAO(connexion);
+    String[][] timetable = adminDAO.showProfessorTimetable(id);
+    request.setAttribute("timetable", timetable);
     if (timetable == null) {
         timetable = new String[8][5]; // Initialize an empty timetable
     }
 %>
-<table border="1">
+<table>
     <thead>
         <tr>
             <th>Jours</th>
@@ -46,7 +104,19 @@
             <tr>
                 <td><%= days[j] %></td>
                 <% for (int i = 0; i < 8; i++) { %>
-                    <td><%= timetable[i][j] != null ? timetable[i][j] : "" %></td>
+                    <td class="<%= (timetable[i][j] == null || timetable[i][j].isEmpty()) ? "empty-cell" : "" %>">
+                        <div class="timetable-cell">
+                            <% if (timetable[i][j] != null && !timetable[i][j].isEmpty()) { 
+                                String[] details = timetable[i][j].split(",");
+                                for (String detail : details) {
+                            %>
+                                    <div><%= detail.trim() %></div>
+                            <% 
+                                }
+                            } 
+                            %>
+                        </div>
+                    </td>
                 <% } %>
             </tr>
         <% } %>

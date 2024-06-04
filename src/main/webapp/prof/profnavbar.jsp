@@ -1,4 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java"%>
+<%@ page import="java.sql.*"%>
+<%@ page import="DAO.MaConnexion"%>
+<%@ page import="DAO.ProfessorsDAO" %>
+<%@ page import="business.Statistics" %>
+<%@ page import="business.Professeur" %>
 <%
 	response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 	response.setHeader("Pragma", "no-cache");
@@ -9,6 +15,10 @@
 	 }else{
 		 response.sendRedirect("../Login.jsp");
 	 }
+	    MaConnexion conn = new MaConnexion();
+	    ProfessorsDAO dao = new ProfessorsDAO(conn);
+	    Professeur prof = dao.getProfByUsername(username);
+
 %>
 <!DOCTYPE html>
 <html>
@@ -202,7 +212,7 @@
                         <img src="../img/dashboard.png" class="img-icon" alt="dashboard icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Dashboard</span> 
                     </a>
-                    <a href="profEmplois.jsp" id="emplois-link" class="nav_link"> 
+                    <a href="profEmplois.jsp?id=<%= prof.getId() %>" id="emplois-link" class="nav_link"> 
                         <img src="../img/admin.png" class="img-icon" alt="admins icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Emplois De Temps</span> 
                     </a>

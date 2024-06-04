@@ -26,6 +26,12 @@ public class Classe {
 		this.filliere = filliere;
 		this.grade = grade;
 	}
+	
+	public Classe(int id,String nom) {
+		super();
+		this.id=id;
+		this.nom=nom;
+	}
 
 
 	public int getId() {

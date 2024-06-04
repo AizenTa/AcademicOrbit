@@ -226,6 +226,7 @@ public class AdminDAO {
 			List<Etudiant> etudiants = new ArrayList<>();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM student");
 				while (rs.next()) {
+					int id = rs.getInt(1);
 					Etudiant etudiant = new Etudiant(
 							rs.getInt("id"),
 							rs.getString("name"),
@@ -235,7 +236,8 @@ public class AdminDAO {
 							rs.getInt("age"),
 							rs.getString("cne_student"),
 							rs.getFloat("note_finale"),
-							rs.getInt("abscence_hours")
+							rs.getInt("abscence_hours"),
+							searchClasseById(searchClasseEtudiant(id)).getName()
 					); 
 					etudiants.add(etudiant);
 				}
@@ -328,6 +330,85 @@ public class AdminDAO {
 			return classes;
 		}
 	 
+	 public void supprimerModule(String id) throws SQLException {
+			stmt.executeUpdate("DELETE FROM module WHERE id='" + id + "'");
+		}
+	 
+	 public void ajouterModule(Module module,String[] classIds,String[] profIds) throws SQLException {
+			String name = module.getName();
+			int nbr_heures = module.getNbr_heures();
+			stmt.executeUpdate("INSERT INTO module (name, nbr_heures) VALUES ('" + name + "','" + nbr_heures +"')",Statement.RETURN_GENERATED_KEYS);
+			ResultSet rs = stmt.getGeneratedKeys();
+			if(rs.next()) {
+				int module_id = rs.getInt(1);
+				
+				for(String profId : profIds) {
+ 					int profid = Integer.parseInt(profId);
+					stmt.executeUpdate("INSERT INTO prof_module (professor_id, module_id) VALUES ('" + profid + "','" + module_id +"')");
+				}
+				
+ 				for(String classId : classIds) {
+ 					int classid = Integer.parseInt(classId);
+					stmt.executeUpdate("INSERT INTO classe_module (classe_id, module_id) VALUES ('" + classId + "','" + module_id +"')");
+ 					emploisClasse(classid,module_id);
+ 				}//  					emploisClasse(profid,module_id);
+ 				
+			}
+	 }
+
+	 public List<Integer> getAllIdsClasses() throws SQLException {
+	        List<Integer> ids = new ArrayList<>();
+
+	        	ResultSet rs = stmt.executeQuery("SELECT id FROM classe");
+	            while (rs.next()) {
+	            	int id = rs.getInt("id");
+	            	ids.add(id);
+	            }
+		        return ids; 
+	        }
+	 
+	 public List<Classe> getAvailableClasses() throws SQLException {
+	        List<Classe> classes = new ArrayList<>();
+	        List<Integer> ids = getAllIdsClasses();
+	        for(int id : ids) {
+	        	ResultSet rs = stmt.executeQuery("SELECT module_id FROM classe_module WHERE classe_id="+id);
+                int som = 0;  
+	        	if(rs.next()) {
+		                som = som + nbr_heures_module(rs.getInt("module_id"));
+		            } 
+	        	  if (som < 24) {
+	                  Classe classe = searchClasseById(id);
+	                  if (classe != null) {
+	                      classes.add(classe);
+	                  }
+	              }
+	        }
+	     return classes; 
+	  }
+	   
+	 public Classe searchClasseById(int id) throws SQLException {
+			ResultSet rs = stmt.executeQuery("SELECT id,name,filliere,grade FROM classe WHERE id="+id);
+			Classe classe = null;
+			if (rs.next()) {
+				 classe = new Classe(
+						rs.getInt("id"),
+						rs.getString("name"),
+						rs.getString("filliere"),
+						rs.getString("grade")
+				);
+			}
+			return classe;
+	 }
+	 
+	 public int searchClasseEtudiant(int etudiantid) throws SQLException {
+			ResultSet rs = stmt.executeQuery("SELECT class_id FROM class_student WHERE student_id="+etudiantid);
+			int id = 0; 
+			if (rs.next()) {
+				id=rs.getInt("class_id");
+			}
+			return id;
+	 }
+	 
 	 public List<Module> getAllModulesInfos() throws SQLException {
 			List<Module> modules = new ArrayList<>();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM module");
@@ -347,7 +428,55 @@ public class AdminDAO {
 		stmt.executeUpdate("DELETE FROM classe_module WHERE ID='" + id+"'");
 	 }
 	 
+	/////////////////////////////////////////////////prof
 	 
+	 
+	 
+	 public List<Integer> getAllIdsProfs() throws SQLException {
+	        List<Integer> ids = new ArrayList<>();
+
+	        	ResultSet rs = stmt.executeQuery("SELECT id FROM prof");
+	            while (rs.next()) {
+	            	int id = rs.getInt("id");
+	            	ids.add(id);
+	            }
+		        return ids; 
+	        }
+	 
+	 public List<Professeur> getAvailableProfs() throws SQLException {
+	        List<Professeur> profs = new ArrayList<>();
+	        List<Integer> ids = getAllIdsProfs();
+	        for(int id : ids) {
+	        	ResultSet rs = stmt.executeQuery("SELECT module_id FROM prof_module WHERE professor_id="+id);
+             int som = 0;  
+	        	if(rs.next()) {
+		                som = som + nbr_heures_module(rs.getInt("module_id"));
+		            } 
+	        	  if (som < 20) {
+	                  Professeur prof = searchProfById(id);
+	                  if (profs != null) {
+	                      profs.add(prof);
+	                  }
+	              }
+	        }
+	     return profs; 
+	  }
+	   
+	 public Professeur searchProfById(int id) throws SQLException {
+			ResultSet rs = stmt.executeQuery("SELECT id,name,last_name,cne_prof FROM prof WHERE id="+id);
+			Professeur prof = null;
+			if (rs.next()) {
+				 prof = new Professeur(
+						rs.getInt("id"),
+						rs.getString("name"),
+						rs.getString("last_name"),
+						rs.getString("cne_prof")
+				);
+			}
+			return prof;
+	 }
+	
+	 /////////////////////////////////////////////////////
 	public String hashString(String input) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");

@@ -58,8 +58,4 @@ public class Module {
 	public String toString() {
 		return  "| ID : " + id +" | Name : " + name ;
 	}
-
-
-
-
 }

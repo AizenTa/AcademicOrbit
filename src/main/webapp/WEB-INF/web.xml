@@ -171,4 +171,24 @@
     <servlet-name>ListeEtudiantClasse</servlet-name>
     <url-pattern>/ListeEtudiantClasse</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>SupprimerModule</display-name>
+    <servlet-name>SupprimerModule</servlet-name>
+    <servlet-class>controller.SupprimerModule</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SupprimerModule</servlet-name>
+    <url-pattern>/SupprimerModule</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>AjouterModule</display-name>
+    <servlet-name>AjouterModule</servlet-name>
+    <servlet-class>controller.AjouterModule</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AjouterModule</servlet-name>
+    <url-pattern>/AjouterModule</url-pattern>
+  </servlet-mapping>
 </web-app>

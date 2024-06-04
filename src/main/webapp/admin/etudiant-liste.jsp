@@ -182,6 +182,7 @@
             <th>CNE d'Etudiant</th>
 			<th>Note finale d'Etudiant</th>
 			<th>Abscence d'Etudiant</th>
+			<th>Classe D'etudiant</th>
             <th>Actions</th>
         </tr>
         <% for (Etudiant etudiant : etudiants) { %>
@@ -195,6 +196,8 @@
                 <td><%= etudiant.getCne_student() %></td>
                 <td><%= etudiant.getNote_finale() %></td>
                 <td><%= etudiant.getAbscence_hours() %></td>
+                <td><%= etudiant.getClasse_student() %></td>
+                
                 <td>
                     <a class="edit-link" href="edit-etudiant.jsp?id=<%= etudiant.getId() %>">Edit</a>
                     <a class="delete-link" href="${pageContext.request.contextPath}/SupprimerEtudiant?id=<%= etudiant.getId() %>">Supprimer</a>                    
