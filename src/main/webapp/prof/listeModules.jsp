@@ -66,5 +66,7 @@ List<Module> modules = dao.getModulesByProfId(profId);
         </tr>
         <% } %>
     </table>
+        <jsp:include page="profnavbar.jsp" />
+    
 </body>
 </html>

@@ -216,9 +216,9 @@
                         <img src="../img/admin.png" class="img-icon" alt="admins icon" style="width: 30px; height: 30px; margin-left: 5%">
                         <span class="nav_name">Emplois De Temps</span> 
                     </a>
-                    <a href="classesNotes" id="classes-link" class="nav_link"> 
+                    <a href="listeModules.jsp?id=<%= prof.getId() %>" id="classes-link" class="nav_link"> 
                         <img src="../img/class.png" class="img-icon" alt="classes icon" style="width: 30px; height: 30px; margin-left: 5%">
-                        <span class="nav_name">Classes</span> 
+                        <span class="nav_name">Modules</span> 
                     </a> 
                 </div>
             </div> 
@@ -229,7 +229,6 @@
         </nav>
     </div>
     <!--Container Main start-->
-    
     <!--Container Main end-->
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

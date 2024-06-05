@@ -53,5 +53,6 @@
         </table>
         <button type="submit">Enregistrer</button>
     </form>
+        <jsp:include page="profnavbar.jsp" />
 </body>
 </html>

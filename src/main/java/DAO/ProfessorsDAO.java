@@ -11,6 +11,8 @@ import java.util.Scanner;
 import business.Classe;
 import business.Etudiant;
 import business.Professeur;
+import business.Module;
+
 
 public class ProfessorsDAO {
 	// attributes 
@@ -67,7 +69,36 @@ public class ProfessorsDAO {
         return timetable;
     }
     
-    
+ // Méthode pour obtenir le nombre total d'étudiants
+    public int getTotalStudents() throws SQLException {
+        int totalStudents = 0;
+        try (ResultSet resultSet = stmt.executeQuery("SELECT COUNT(*) AS total FROM student")) {
+            if (resultSet.next()) {
+                totalStudents = resultSet.getInt("total");
+            }
+        }
+        return totalStudents;
+    }
+
+ // Méthode pour obtenir le nombre total de notes enregistrées par un professeur
+    public int getTotalGradesEntered(int professorId) throws SQLException {
+        int totalGradesEntered = 0;
+        try {
+            // Récupérer les modules associés au professeur
+            List<Integer> moduleIds = getIDsModulesByProfId(professorId);
+            for (int moduleId : moduleIds) {
+                // Récupérer les notes enregistrées pour chaque module
+                ResultSet resultSet = stmt.executeQuery("SELECT COUNT(*) AS total FROM student_module WHERE module_id = " + moduleId);
+                if (resultSet.next()) {
+                    totalGradesEntered += resultSet.getInt("total");
+                }
+            }
+        } catch (SQLException e) {
+            // Gérer l'exception selon votre logique
+            e.printStackTrace();
+        }
+        return totalGradesEntered;
+    }
     // Method to get modules by professor ID
     public List<Integer> getIDsModulesByProfId(int profId) throws SQLException {
         List<Integer> ids = new ArrayList<>();
@@ -84,12 +115,15 @@ public class ProfessorsDAO {
         for (int id : ids) {
             ResultSet resultSet = stmt.executeQuery("SELECT * FROM module WHERE id = " + id);
             while (resultSet.next()) {
-                modules.add(new Module(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getInt("nbr_heures")));
-            }
+            	modules.add(new Module(resultSet.getInt("id"), 
+                        resultSet.getString("name"), 
+                        resultSet.getInt("nbr_heures")));
+}           
             resultSet.close();
-        }
+            }
         return modules;
-    }
+        }
+    
     
     public List<Integer> getIDsClassesByModuleId(int moduleId) throws SQLException {
         List<Integer> ids = new ArrayList<>();
@@ -114,8 +148,6 @@ public class ProfessorsDAO {
         return classes;
     }
     
-
-    // Method to get students by module ID based on classes
     public List<Etudiant> getStudentsByModuleId(int moduleId) throws SQLException {
         List<Etudiant> students = new ArrayList<>();
         // Retrieve classes associated with the module
