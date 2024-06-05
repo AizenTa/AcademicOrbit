@@ -13,6 +13,9 @@ public class Etudiant extends Personne{
 		this.cne_student = cne_student;
 	}
 	
+	public Etudiant(int id,String nom, String prenom) {
+		super(id,nom, prenom);
+	}
 
 	public Etudiant(int id,String username,String password,String nom, String prenom, String address, String sex, int age, String cne_student,int abscence_hours) {
 		super(id,username,password,nom, prenom, address, sex, age);

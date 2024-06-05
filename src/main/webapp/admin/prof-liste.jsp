@@ -3,21 +3,38 @@
 <%@ page import="DAO.AdminDAO" %>
 <%@ page import="business.Professeur" %>
 <%
-	response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-	response.setHeader("Pragma", "no-cache");
-	response.setHeader("Expires", "0");
-	
-	String username = ""; 
-	 if(session.getAttribute("username")!=null){
-		 username = session.getAttribute("username").toString();
-	 }else{
-		 response.sendRedirect("../Login.jsp");
-	 }
-	 
-	MaConnexion conn = new MaConnexion();
-    List<Professeur> professeur = new ArrayList<>();
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setHeader("Expires", "0");
+    
+    String username = ""; 
+    if(session.getAttribute("username")!=null){
+        username = session.getAttribute("username").toString();
+    }else{
+        response.sendRedirect("../Login.jsp");
+    }
+    
+    MaConnexion conn = new MaConnexion();
+    List<Professeur> professeurs = new ArrayList<>();
     AdminDAO dao = new AdminDAO(conn);
-    professeur = dao.getAllProfsInfos();
+    professeurs = dao.getAllProfsInfos();
+
+    String searchQuery = request.getParameter("searchQuery");
+    List<Professeur> filteredProfesseurs = new ArrayList<>();
+    
+    if (searchQuery != null && !searchQuery.isEmpty()) {
+        for (Professeur professeur : professeurs) {
+            if (professeur.getNom().toLowerCase().contains(searchQuery.toLowerCase())) {
+                filteredProfesseurs.add(professeur);
+            }else if(professeur.getPrenom().toLowerCase().contains(searchQuery.toLowerCase())){
+            	filteredProfesseurs.add(professeur);
+            }else if(professeur.getCne_prof().toLowerCase().contains(searchQuery.toLowerCase())){
+            	filteredProfesseurs.add(professeur);
+            }
+        }
+    } else {
+        filteredProfesseurs = professeurs; // If no search query, show all professors
+    }
 %>
 <!DOCTYPE html>
 <html>
@@ -167,9 +184,12 @@
     <div class="add-link">
         <a href="add-prof.jsp">Ajouter professeur</a>
     </div>
+    <div>
+    <p>Vous pouvez rechercher par nom, prénom ou CNE (Code National d'Étudiant).</p>
+</div>
     <form action="" method="GET" style="margin-bottom: 20px;">
-        <input type="text" name="cne" placeholder="Search by Professor's CNE" style="padding: 8px; border-radius: 5px;">
-        <button type="submit" style="padding: 8px 20px; border-radius: 5px; background-color: #007bff; color: #fff; border: none;">Search</button>
+        <input type="text" name="searchQuery" placeholder="Recherche" style="padding: 8px; border-radius: 5px;">
+        <button type="submit" style="padding: 8px 20px; border-radius: 5px; background-color: #007bff; color: #fff; border: none;">Rechercher</button>
     </form>
     <table border="1">
         <tr>
@@ -182,7 +202,7 @@
             <th>CNE du Professeur</th>
             <th>Actions</th>
         </tr>
-        <% for (Professeur prof : professeur) { %>
+        <% for (Professeur prof : filteredProfesseurs) { %>
             <tr>
                 <td><%= prof.getId() %></td>
                 <td><%= prof.getNom() %></td>

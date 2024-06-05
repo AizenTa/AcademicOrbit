@@ -17,5 +17,15 @@ public class Admin extends Personne{
 	public Admin(int id,String username,String password,String name, String last_name) {
 		super(id,username,password,name,last_name);
 	}
+
+	public Admin() {
+		super();
+	}
+	public void setId(int int1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 	
 }

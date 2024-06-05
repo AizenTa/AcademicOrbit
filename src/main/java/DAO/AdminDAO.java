@@ -36,7 +36,8 @@ public class AdminDAO {
 		this.connexion = connexion;
 		stmt = connexion.getStmt();
 	}
-	    
+	    ///// filter mothods
+
 /////////////////// Methodes
 
 	public List<Admin> getAllAdminsInfos() throws SQLException {
@@ -208,7 +209,7 @@ public class AdminDAO {
 	 }
 	 
 	 /// Etudiant
-	 public void ajouterEtudiant(Etudiant etudiant) throws SQLException {
+	 public void ajouterEtudiant(Etudiant etudiant,String[] classIds) throws SQLException {
 	        String etudiant_username = etudiant.getUsername();
 	        String etudiant_password = etudiant.getPassword();
 	        String nom = etudiant.getNom();
@@ -219,14 +220,43 @@ public class AdminDAO {
 	        String cne_etudiant = etudiant.getCne_student(); 
 	        
 	        String hashed_password = hashString(etudiant_password);
-	    	stmt.executeUpdate("INSERT INTO student (username,password,name, last_name, address, sex, age, cne_student) VALUES ('" + etudiant_username + "','" + hashed_password + "','" + nom + "','" + prenom + "','" + address + "','" + sex + "'," + age + ",'" + cne_etudiant + "')");			
-	    } 
-	
+	    	stmt.executeUpdate("INSERT INTO student (username,password,name, last_name, address, sex, age, cne_student) VALUES ('" + etudiant_username + "','" + hashed_password + "','" + nom + "','" + prenom + "','" + address + "','" + sex + "'," + age + ",'" + cne_etudiant + "')",Statement.RETURN_GENERATED_KEYS);			
+			ResultSet rs = stmt.getGeneratedKeys();
+	    	if(rs.next()) {
+				int student_id = rs.getInt(1);
+				
+				for(String classId : classIds) {
+					int classid = Integer.parseInt(classId);
+					stmt.executeUpdate("INSERT INTO class_student (class_id, student_id) VALUES ('" + classid + "','" + student_id +"')");
+					
+				}
+			}  		  
+	 } 
+	 
+	 public void ajouterModule(Module module,String[] classIds,String[] profIds) throws SQLException {
+			String name = module.getName();
+			int nbr_heures = module.getNbr_heures();
+			stmt.executeUpdate("INSERT INTO module (name, nbr_heures) VALUES ('" + name + "','" + nbr_heures +"')",Statement.RETURN_GENERATED_KEYS);
+			ResultSet rs = stmt.getGeneratedKeys();
+			if(rs.next()) {
+				int module_id = rs.getInt(1);
+				
+				for(String profId : profIds) {
+					int profid = Integer.parseInt(profId);
+					stmt.executeUpdate("INSERT INTO prof_module (professor_id, module_id) VALUES ('" + profid + "','" + module_id +"')");
+				}
+				for(String classId : classIds) {
+					int classid = Integer.parseInt(classId);
+					stmt.executeUpdate("INSERT INTO classe_module (classe_id, module_id) VALUES ('" + classId + "','" + module_id +"')");
+					emploisClasse(classid,module_id);
+				}
+			}
+	 }
+	 
 	 public List<Etudiant> getAllEtudiantInfos() throws SQLException {
 			List<Etudiant> etudiants = new ArrayList<>();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM student");
 				while (rs.next()) {
-					int id = rs.getInt(1);
 					Etudiant etudiant = new Etudiant(
 							rs.getInt("id"),
 							rs.getString("name"),
@@ -236,8 +266,7 @@ public class AdminDAO {
 							rs.getInt("age"),
 							rs.getString("cne_student"),
 							rs.getFloat("note_finale"),
-							rs.getInt("abscence_hours"),
-							searchClasseById(searchClasseEtudiant(id)).getName()
+							rs.getInt("abscence_hours")
 					); 
 					etudiants.add(etudiant);
 				}
@@ -255,6 +284,35 @@ public class AdminDAO {
 			etudiants=getAllEtudiantById(ids);
 			return etudiants;
 		}
+	 
+	 public List<Classe> getAllModuleClasse(int id) throws SQLException {
+			List<Classe> classe = new ArrayList<>();
+			List<Integer> ids = new ArrayList<>();
+			ResultSet rs = stmt.executeQuery("SELECT classe_id FROM classe_module WHERE module_id='"+id+"'");
+				while (rs.next()) {
+					int classe_id = rs.getInt("classe_id");
+					ids.add(classe_id);
+				}
+			classe=getAllModuleById(ids);
+			return classe;
+		}
+	 
+	 public List<Classe> getAllModuleById(List<Integer> ids) throws SQLException {
+		 List<Classe> classes = new ArrayList<>();	
+		 for(int id : ids) {
+				ResultSet rs = stmt.executeQuery("SELECT * FROM classe WHERE ID='"+id+"'");
+					while (rs.next()) {
+						Classe classe = new Classe(
+								rs.getInt("id"),
+								rs.getString("name"),
+								rs.getString("filliere"),
+								rs.getString("grade")
+						); 
+						classes.add(classe);
+					}
+			}
+			return classes;
+			}
 	 
 	 public List<Etudiant> getAllEtudiantById(List<Integer> ids) throws SQLException {
 		 List<Etudiant> etudiants = new ArrayList<>();	
@@ -334,27 +392,7 @@ public class AdminDAO {
 			stmt.executeUpdate("DELETE FROM module WHERE id='" + id + "'");
 		}
 	 
-	 public void ajouterModule(Module module,String[] classIds,String[] profIds) throws SQLException {
-			String name = module.getName();
-			int nbr_heures = module.getNbr_heures();
-			stmt.executeUpdate("INSERT INTO module (name, nbr_heures) VALUES ('" + name + "','" + nbr_heures +"')",Statement.RETURN_GENERATED_KEYS);
-			ResultSet rs = stmt.getGeneratedKeys();
-			if(rs.next()) {
-				int module_id = rs.getInt(1);
-				
-				for(String profId : profIds) {
- 					int profid = Integer.parseInt(profId);
-					stmt.executeUpdate("INSERT INTO prof_module (professor_id, module_id) VALUES ('" + profid + "','" + module_id +"')");
-				}
-				
- 				for(String classId : classIds) {
- 					int classid = Integer.parseInt(classId);
-					stmt.executeUpdate("INSERT INTO classe_module (classe_id, module_id) VALUES ('" + classId + "','" + module_id +"')");
- 					emploisClasse(classid,module_id);
- 				}//  					emploisClasse(profid,module_id);
- 				
-			}
-	 }
+	
 
 	 public List<Integer> getAllIdsClasses() throws SQLException {
 	        List<Integer> ids = new ArrayList<>();
@@ -701,7 +739,6 @@ public class AdminDAO {
 	        timetable[startTime][indexDay] = "module " + moduleId + " salle " + salle_id; // Simplified course display
 	    }
 
-	    printTimetable(timetable, "Timetable for class ID: " + classeId);
 	}
 	
 	public void showRoomTimetable(int salleId) throws SQLException {
@@ -717,790 +754,9 @@ public class AdminDAO {
 	        timetable[startTime][indexDay] = "classe " + classe_id; // Simplified course display
 	    }
 
-	    printTimetable(timetable, "Timetable for room ID: " + salleId);
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	 
-	 
-	 
-	 public void ajouterAdmin() throws SQLException {
-		char reponse = 'o';
-		while (reponse == 'o') {
-			System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||| Ajoutez Admin |||||||||||||||||||||||||||||||||||||||||||||||||||");
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-			System.out.print("| Entrer username : ");
-			String admin_username = sc.nextLine();
-			System.out.print("| Entrer password : ");
-			String admin_password = sc.nextLine();
-			System.out.print("| Entrer nom : ");
-			String admin_nom = sc.nextLine();
-			System.out.print("| Entrer prenom : ");
-			String admin_prenom = sc.nextLine();
-
-			String hashed_username = hashString(admin_username);
-			String hashed_password = hashString(admin_password);
-
-			stmt.executeUpdate("INSERT INTO admin (username, password, name, last_name) VALUES ('" + hashed_username + "','" + hashed_password + "','" + admin_nom + "','" + admin_prenom + "')");
-			System.out.println("| + => Vous avez bien ajoutez " + admin_nom + " " + admin_prenom);
-			System.out.print("| Voulez vous ajoutez un nouveau admin (o pour oui / n pour non ) : ");
-			reponse = sc.next().charAt(0);
-			sc.nextLine();
-			System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-
-		}
-	}
-	
-	public void addClasse() {
-	    char reponse = 'o';
-	    while (reponse == 'o') {
-	        System.out.println("||||||||||||||||||||||||||||||||||||||||||||||| Ajoutez la classe ||||||||||||||||||||||||||||||||||||||||||||||||");
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer le nom de la classe  :");
-	        String name_classe = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer la filiere de la classe : ");
-	        String filiere_classe = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("|Entrer le grade de la classe : ");
-	        String grade_classe = sc.nextLine();
-
-	        try {
-	            stmt.executeUpdate("INSERT INTO classe (name, filliere, grade) VALUES ('" + name_classe + "','" + filiere_classe + "','" + grade_classe + "')", Statement.RETURN_GENERATED_KEYS);
-
-	            ResultSet generatedKeys = stmt.getGeneratedKeys();
-	            int classId = -1;
-	            if (generatedKeys.next()) {
-	                classId = generatedKeys.getInt(1);
-	            } else {
-	                throw new SQLException("Failed to get the generated class ID.");
-	            }
-
-	            char reponse_module = 'o';
-	            while (reponse_module == 'o') {
-					System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-					System.out.println("| |||||||||||||||||||||||||||||||||  Ajouter un module pour cette classe |||||||||||||||||||||||||||||||||||||||| ");
-					System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-					System.out.print("| Choisir l'id de ce module : ");
-	                int module_id = sc.nextInt();
-					System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                boolean moduleExists = checkIfModuleExists(module_id);
-
-	                if (moduleExists) {
-	                    stmt.executeUpdate("INSERT INTO classe_module (classe_id, module_id) VALUES ('" + classId + "','" + module_id + "')");
-	                	emploisClasse(classId,module_id);
-	                } else {
-	                    System.out.println("Module with ID " + module_id + " does not exist. Please add the module first.");
-	                }
-
-	                System.out.print("| Voulez-vous ajouter un autre module à cette classe? (si oui, tapez Oui, si non, tapez n'importe quoi..) : ");
-	                reponse_module = sc.next().charAt(0);
-
-	                sc.nextLine();
-	            }
-				System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-	            System.out.print("| Voulez-vous ajouter un autre classe? (si oui, tapez Oui, si non, tapez n'importe quoi..)");
-	            reponse = sc.next().charAt(0);
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-	            sc.nextLine();
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
-	}
-	
-	
-	
-    
-	
-	
-    
-
-
-	private void printTimetable(String[][] timetable, String title) {
-		System.out.println(title);
-		System.out.println("--------------------------------------------------");
-		System.out.print("Day/Time | ");
-		for (int period = 0; period < 8; period++) {
-			int t = period;
-			if(t + 8 < 11) {
-				System.out.printf("%02d:00 - %02d:00 | ", 8 + t, 8 + t + 1);
-			}
-			if(t + 8 > 11) {
-				System.out.printf("%02d:00 - %02d:00 | ", 8 + t + 2, 8 + t + 3);
-			}
-		}
-		System.out.println();
-		System.out.println("--------------------------------------------------");
-
-		for (int day = 0; day < DAYS.length; day++) {
-			System.out.printf("%-9s | ", DAYS[day]);
-			for (int period = 0; period < 8; period++) {
-				if (timetable[period][day] != null) {
-					System.out.printf("%-9s | ", timetable[period][day]);
-				} else {
-					System.out.print("         | ");
-				}
-			}
-			System.out.println();
-		}
-		System.out.println("--------------------------------------------------");
-	}
-	
-
-
-	public void addStudent() {
-	    char reponse = 'o';
-	    while (reponse == 'o') {
-	        System.out.println("|||||||||||||||||||||||||||||||||||||||||||| Ajoutez Etudiant ||||||||||||||||||||||||||||||||||||||||||||||||||||");
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    	System.out.print("| Entrer username d'etudiant : ");
-	        String student_username = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer un mot de passe pour le prof  : ");
-	        String student_password= sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer le nom de l'etudiant : ");
-	        String name = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer le last name de l'etudiant " + name + " : ");
-	        String last_name = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer le address de l'etudiant " + name + " : ");
-	        String address = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer le sex de l'etudiant " + name + " : ");
-	        String sex = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer l'age de l'etudiant " + name + " : ");
-	        int age = sc.nextInt();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        sc.nextLine(); 
-	        System.out.print("| Entrer le cne de l'etudiant " + name + " : ");
-	        String cne_student = sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-
-			String hashed_username = hashString(student_username);
-			String hashed_password = hashString(student_password);
-
-	        try {
-	            // Insert the student into the 'students' table
-	            stmt.executeUpdate("INSERT INTO student (username,password,name, last_name, address, sex, age, cne_student) VALUES ('"+hashed_username+"','"+ hashed_password+"','"+name + "','" + last_name + "','" + address + "','" + sex + "'," + age + ",'" + cne_student + "')", Statement.RETURN_GENERATED_KEYS);
-
-	            // Get the generated student ID
-	            ResultSet generatedKeys = stmt.getGeneratedKeys();
-	            int studentId = -1;
-	            if (generatedKeys.next()) {
-	                studentId = generatedKeys.getInt(1);
-	            } else {
-	                throw new SQLException("| Failed to get the generated student ID.");
-	            }
-    			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-		        System.out.println("||||||||||||||||||||||||||||||||||||||| Affecter ce etudiant à une classe ||||||||||||||||||||||||||||||||||||||||");
-    			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	            System.out.print("| Choisir l'id de la classe : ");
-	            int classe_id = sc.nextInt();
-    			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	            sc.nextLine();  
-	            stmt.executeUpdate("INSERT INTO class_student (class_id, student_id) VALUES (" + classe_id + "," + studentId + ")");
-    			System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-	            System.out.println("| + => Étudiant ajouté avec succès à la classe ");
-    			System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-	        } catch (SQLException e) {
-	        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("|                                   Votre informations est fause  -_-                                            |");
-		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-		    	addStudent();
-	        }
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Voulez-vous ajouter un autre étudiant? (si oui, tapez Oui, si non, tapez n'importe quoi..) : ");
-	        reponse = sc.next().charAt(0);
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        sc.nextLine();
-	    }
-	}
-
-	public void ajouterModule() {
-	    char reponse = 'o';
-	    while (reponse == 'o') {
-	        System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||| Ajoutez Module ||||||||||||||||||||||||||||||||||||||||||||||||||");
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer le nom du module : ");
-	        String name = sc.nextLine();
-            System.out.print("| Entrer nbr heures module : ");
-            int nbr_heures = sc.nextInt();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        try {
-	            // Insert the module into the 'modules' table
-	            stmt.executeUpdate("INSERT INTO module (name,nbr_heures) VALUES ('" + name + "," + nbr_heures +"')", Statement.RETURN_GENERATED_KEYS);
-
-	            // Get the generated module ID
-	            ResultSet generatedKeys = stmt.getGeneratedKeys();
-	            int moduleId = -1;
-	            if (generatedKeys.next()) {
-	                moduleId = generatedKeys.getInt(1);
-	            } else {
-	                throw new SQLException("| Failed to get the generated module ID.");
-	            }
-
-
-	            char reponse_prof = 'o';
-	            while (reponse_prof == 'o') {
-	    			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    	        System.out.println("||||||||||||||||||||||||||||||||||||| Affecter un professeur à ce module |||||||||||||||||||||||||||||||||||||||||");
-	    			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                System.out.print("| Entrer l'id du professeur : ");
-	                int professor_id = sc.nextInt();
-	    			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                sc.nextLine();  
-	                stmt.executeUpdate("INSERT INTO prof_module (professor_id, module_id) VALUES (" + professor_id + "," + moduleId + ")");
-	    			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                System.out.println("| + => Professeur ajouté avec succès au module.");
-	    			System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-	    			System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-	                System.out.print("| Voulez-vous ajouter un autre professeur à ce module? (si oui, tapez Oui, si non, tapez n'importe quoi..) : ");
-	                reponse_prof = sc.next().charAt(0);
-	    			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                sc.nextLine();
-	            }
-	            System.out.println("| + => Module ajouté avec succès.");
-	        } catch (SQLException e) {
-	        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("|                                  Votre informations est fause  -_-                                             |");
-		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-		    	ajouterModule();
-	        }
-	        
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Voulez-vous ajouter un autre module? (si oui, tapez Oui, si non, tapez n'importe quoi..) : ");
-	        reponse = sc.next().charAt(0);
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-	        sc.nextLine();
-	    }
-	}
-
-
-	// modifier section 
-
-	
-
-	public void modifierStudent() {
-	    char reponse = 'o';
-	    while (reponse == 'o') {
-	    	System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||| Modifier Etudiant |||||||||||||||||||||||||||||||||||||||||||||||");
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer l'id de l'étudiant à modifier : ");
-	        int id_student = sc.nextInt();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-	        sc.nextLine();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.println("| Choisir le champ à modifier (1:username, 2:password, 3: Nom, 4: Prenom, 5: Adresse, 6: Sexe, 7: Age, 8: CNE Etudiant, 9: Modifier la classe) : ");
-	        int reponse_champ = sc.nextInt();
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        sc.nextLine();
-
-	        try {
-	            switch (reponse_champ) {
-	            	case 1:
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	            		System.out.print("| Entrer le nom de l'étudiant : ");
-	                    String username = sc.nextLine();
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE student SET username = '" + username + "' WHERE ID='" + id_student+"'");
-	                    break;
-	                case 2:
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer le prénom de l'étudiant : ");
-	                    String password = sc.nextLine();
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE student SET password = '" + password + "' WHERE ID='" + id_student+"'");
-	                    break;
-	                case 3:
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer le nom de l'étudiant : ");
-	                    String student_name = sc.nextLine();
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE student SET name = '" + student_name + "' WHERE ID='" + id_student+"'");
-	                    break;
-	                case 4:
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer le prénom de l'étudiant : ");
-	                    String student_prenom = sc.nextLine();
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE student SET last_name = '" + student_prenom + "' WHERE ID='" + id_student+"'");
-	                    break;
-	                case 5:
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer l'adresse de l'étudiant : ");
-	                    String student_address = sc.nextLine();
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE student SET address = '" + student_address + "' WHERE ID='" + id_student+"'");
-	                    break;
-	                case 6:
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer le sexe de l'étudiant : ");
-	                    String student_sex = sc.nextLine();
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE student SET sex = '" + student_sex + "' WHERE ID='" + id_student+"'");
-	                    break;
-	                case 7:
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer l'âge de l'étudiant :");
-	                    int student_age = sc.nextInt();
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    sc.nextLine();  
-	                    stmt.executeUpdate("UPDATE student SET age = " + student_age + " WHERE ID='" + id_student+"'");
-	                    break;
-	                case 8:
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer le CNE de l'étudiant :");
-	                    String student_cne = sc.nextLine();
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE student SET cne_student = '" + student_cne + "' WHERE ID='" + id_student+"'");
-	                    break;
-	                case 9:
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Choisir l'id de la nouvelle classe : ");
-	                    int id_classe_student = sc.nextInt();
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    sc.nextLine();  
-	                    stmt.executeUpdate("UPDATE class_student SET class_id = " + id_classe_student + " WHERE student_id='" + id_student+"'");
-	                    break;
-	                default:
-						System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-						System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-						System.out.println("|                                      CHAMP INVALIDE       -_-                                                  |");
-						System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-						System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-						modifierStudent();
-	    				break;
-	            }
-            	System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-	            System.out.println("| / => Étudiant modifié avec succès.");
-            	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        } catch (SQLException e) {
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-				System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("|                                      CHAMP INVALIDE       -_-                                                  |");
-				System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-				modifierStudent();
-	        }
-        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Voulez-vous modifier un autre étudiant? ('o' pour oui, 'n'importe quel caractère' pour non) : ");
-	        reponse = sc.next().charAt(0);
-        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        sc.nextLine();
-	    }
-	}
-	
-	public void modifierModule() {
-	    char reponse = 'o';
-	    while (reponse == 'o') {
-	    	System.out.println("||||||||||||||||||||||||||||||||||||||||||||||| Modifier Module ||||||||||||||||||||||||||||||||||||||||||||||||||");
-        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer l'id du module à modifier : ");
-	        int id_module = sc.nextInt();  
-        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-        	sc.nextLine();
-        	System.out.print("| Choisir le champ à modifier (1: Nom, 2: Modifier le professeur qui enseigne ce module) : ");
-	        int reponse_champ = sc.nextInt();
-	        sc.nextLine();
-        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        try {
-	            switch (reponse_champ) {
-	                case 1:
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer le nom du module  : ");
-	                    String module_name = sc.nextLine();
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE module SET name = '" + module_name + "' WHERE ID='" + id_module+"'");
-	                    break;
-	                case 2:
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer l'id du nouveau professeur qui a enseigné ce module : ");
-	                    int id_module_prof = sc.nextInt();
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    sc.nextLine();  
-	                    
-	                    boolean moduleExists = checkIfModuleExists(id_module);
-	                    boolean professorExists = checkIfProfessorExists(id_module_prof);
-
-	                    if (moduleExists && professorExists) {
-	                        stmt.executeUpdate("UPDATE prof_module SET professor_id = " + id_module_prof + " WHERE module_id='" + id_module+"'");
-	                    	System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-	                        System.out.println("| / => Module modifié avec succès.");
-	                    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    } else {
-	                    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                        System.out.println("| x => Le module ou le professeur n'existe pas.");
-	                    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    }
-	                    break;
-	                default:
-						System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-						System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-						System.out.println("|                                      CHAMP INVALIDE       -_-                                                  |");
-						System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-						System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-						modifierModule();
-	    				break;
-	            }
-
-	        } catch (SQLException e) {
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-				System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("|                                       ID INVALIDE       -_-                                                    |");
-				System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-				modifierModule();
-	        }
-        	System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Voulez-vous modifier un autre module? ('o' pour oui, 'n'importe quel caractère' pour non) : ");
-	        reponse = sc.next().charAt(0);
-        	System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-	        sc.nextLine();
-	    }
-	}
-
-	
-	public void modifierClasse() {
-	    char reponse = 'o';
-	    while (reponse == 'o') {
-	    	System.out.println("|||||||||||||||||||||||||||||||||||||||||||| Modifier Classe |||||||||||||||||||||||||||||||||||||||||||||||||||||");
-        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Entrer l'id de la classe : ");
-	        int id_classe = sc.nextInt();
-        	System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-	        sc.nextLine();
-        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Choisir le champ à modifier (1: Nom, 2: Filière, 3: Grade, 4: Ajouter un module, 5: Supprimer un module, 6: Ajouter un étudiant, 7: Supprimer un étudiant) : ");
-	        int reponse_champ = sc.nextInt();
-        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        sc.nextLine();
-
-	        try {
-	            switch (reponse_champ) {
-	                case 1:
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer le nom de la classe : ");
-	                    String classe_name = sc.nextLine();
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE classe SET name = '" + classe_name + "' WHERE ID='" + id_classe+"'");
-	                    break;
-	                case 2:
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer la filière de la classe : ");
-	                    String classe_filliere = sc.nextLine();
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE classe SET filliere = '" + classe_filliere + "' WHERE id = " + id_classe);
-	                    break;
-	                case 3:
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer le grade de la classe : ");
-	                    String classe_grade = sc.nextLine();
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    stmt.executeUpdate("UPDATE classe SET grade = '" + classe_grade + "' WHERE ID='" + id_classe+"'");
-	                    break;
-	                case 4:
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer l'id du module à ajouter à cette classe : ");
-	                    int id_module_classe_add = sc.nextInt();
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    sc.nextLine();
-	                    stmt.executeUpdate("INSERT INTO classe_module (classe_id, module_id) VALUES (" + id_classe + ", " + id_module_classe_add + ")");
-	                    break;
-	                case 5:
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer l'id du module à supprimer de cette classe : ");
-	                    int id_module_classe_supp = sc.nextInt();
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    sc.nextLine();  
-	                    stmt.executeUpdate("DELETE FROM classe_module WHERE classe_id = " + id_classe + " AND module_id ='" + id_module_classe_supp+"'");
-	                    break;
-	                case 6:
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer l'id de l'étudiant à ajouter à cette classe : ");
-	                    int id_etudiant_classe_add = sc.nextInt();
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    sc.nextLine();  
-	                    stmt.executeUpdate("INSERT INTO class_student (class_id, student_id) VALUES (" + id_classe + ", " + id_etudiant_classe_add + ")");
-	                    // 
-	                    break;
-	                case 7:
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    System.out.print("| Entrer l'id de l'étudiant à supprimer de cette classe : ");
-	                    int id_student_classe_supp = sc.nextInt();
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	                    sc.nextLine();  
-	                    stmt.executeUpdate("DELETE FROM class_student WHERE student_id='" + id_student_classe_supp+"'");
-	                    break;
-	                default:
-	                	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-	    				System.out.println("|                                          Champ Invalide    -_-                                                 |");
-	    		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-	    				System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-	    				modifierClasse();
-	    				break;
-	            }
-            	System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-	            System.out.println("| / => Classe modifiée avec succès.");
-            	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-
-	        } catch (SQLException e) {
-            	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("|                                             Champ Invalide    -_-                                              |");
-		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-				modifierClasse();
-	        }
-        	System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-	        System.out.print("| Voulez-vous modifier une autre classe? ('o' pour oui, 'n'importe quel caractère' pour non) : ");
-	        reponse = sc.next().charAt(0);
-        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-
-	        sc.nextLine();
-	    }
-	}
-	
-	// supprimer section 
-	
-	
-	public void supprimerStudent() {
-    	System.out.println("||||||||||||||||||||||||||||||||||||||||| Supprimer Etudiant |||||||||||||||||||||||||||||||||||||||||||||||||||||");
-    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    System.out.print("| Choisir l'id d'étudiant : ");
-	    int student_id = sc.nextInt();
-    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    sc.nextLine();
-
-	    try {
-			if(checkIfStudentExist(student_id)==true){
-				stmt.executeUpdate("DELETE FROM class_student WHERE student_id='" + student_id+"'");
-				stmt.executeUpdate("DELETE FROM student_module WHERE student_id='" + student_id+"'");
-				stmt.executeUpdate("DELETE FROM student WHERE id='" + student_id+"'");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-				System.out.println("| - => Étudiant supprimé avec succès.");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-
-			} else {
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-				System.out.println("| !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! STUDENT DEJA SUPPRIME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! |");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-			}
-	         } catch (SQLException e) {
-	    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-			System.out.println("|                                       ID INVALIDE       -_-                                                    |");
-	    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-			supprimerStudent();
-	    }
-	}
-	public void supprimerModule() {
-    	System.out.println("||||||||||||||||||||||||||||||||||||||||||||||| Supprimer Etudiant |||||||||||||||||||||||||||||||||||||||||||||||");
-    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    System.out.print("| Choisir l'id de module :  ");
-	    int module_id = sc.nextInt();
-    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    sc.nextLine();
-	    try {
-	    	if(checkIfModuleExists(module_id)==true){
-				stmt.executeUpdate("DELETE FROM classe_module WHERE module_id='" + module_id + "'");
-
-				stmt.executeUpdate("DELETE FROM module WHERE ID='" + module_id + "'");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-				System.out.println("| - => Module supprimé avec succès.");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-
-			}else{
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-				System.out.println("| !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! MODULE DEJA SUPPRIME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! |");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-			}
-	      } catch (SQLException e) {
-	    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-			System.out.println("|                                         ID INVALIDE       -_-                                                  |");
-	    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-			supprimerModule();
-	    }
-	}
-	
-	public void supprimerClasse() {
-    	System.out.println("|||||||||||||||||||||||||||||||||||||||||||||| Supprimer Classe ||||||||||||||||||||||||||||||||||||||||||||||||||");
-    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    System.out.print("| Choisir l'id de la Classe : ");
-	    int classe_id = sc.nextInt();
-    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    sc.nextLine();
-
-	    try {
-			if(checkIfClasseExist(classe_id)==true){
-				stmt.executeUpdate("DELETE FROM class_student WHERE class_id='" + classe_id+"'");
-
-				stmt.executeUpdate("DELETE FROM classe_module WHERE classe_id='" + classe_id+"'");
-
-				stmt.executeUpdate("DELETE FROM classe WHERE ID='" + classe_id+"'");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-				System.out.println("| - => Classe supprimée avec succès.");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-			}else{
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-				System.out.println("| !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CLASSE DEJA SUPPRIME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! |");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-			}
-	    } catch (SQLException e) {
-	    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-			System.out.println("|                                          ID INVALIDE       -_-                                                 |");
-	    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-			System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-			supprimerClasse();
-	    }
-	}
-// affichage section
-	 public void afficherModules() {
-	        try {
-	        	System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-	            System.out.println("| Liste des Modules ");
-		    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	            ResultSet resultSet = stmt.executeQuery("SELECT * FROM module");
-		    	 while (resultSet.next()) {
-	                System.out.println("| ID : " + resultSet.getInt("id") +
-	                        " | Nom : " + resultSet.getString("name"));
-	            }
-	        } catch (SQLException e) {
-	        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("|                                          MODULE VIDE       -_-                                                 |");
-		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-	        }
-	    }
-
-	    public void afficherProfesseurs() {
-	        try {
-	        	System.out.println("\n+----------------------------------------------------------------------------------------------------------------+");
-	            System.out.println("| Liste des Professeurs ");
-		    	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	            ResultSet resultSet = stmt.executeQuery("SELECT * FROM prof");
-		    	 while (resultSet.next()) {
-	                System.out.println("| ID : " + resultSet.getInt("id") +
-	                        " | Nom : " + resultSet.getString("name") +
-	                        " | Prénom : " + resultSet.getString("last_name"));
-	            }
-	        } catch (SQLException e) {
-	        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("|                                         PROF  VIDE      -_-                                                    |");
-		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-	      	        }
-	    }
-
-	    public void afficherEtudiants() {
-	        try {
-	        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-	        	System.out.println("| Liste des Étudiants ");
-	        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-     
-	            ResultSet resultSet = stmt.executeQuery("SELECT * FROM student");
-		           while (resultSet.next()) {
-	                System.out.println("| ID : " + resultSet.getInt("id") +
-	                        " | Nom : " + resultSet.getString("name") +
-	                        " | Prénom : " + resultSet.getString("last_name"));
-	            }
-	        } catch (SQLException e) {
-	        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("|                                          ETUDIANT  VIDE      -_-                                               |");
-		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-				}
-	    }
-
-	    public void afficherClasses() {
-	        try {
-	        	 ResultSet resultSet = stmt.executeQuery("SELECT * FROM classe");
-	        	  while (resultSet.next()) {
-	                System.out.println("| ID : " + resultSet.getInt("id") +
-	                        " | Nom : " + resultSet.getString("name") +
-	                        " | Filière : " + resultSet.getString("filliere") +
-	                        " | Grade : " + resultSet.getString("grade"));
-	            }
-	        } catch (SQLException e) {
-	        	System.out.println("+----------------------------------------------------------------------------------------------------------------+");
-		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("|                                        CLASSES   VIDE      -_-                                                 |");
-		    	System.out.println("|!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!|");
-				System.out.println("+----------------------------------------------------------------------------------------------------------------+\n");
-					        }
-	    }
-
-
 	private boolean checkIfModuleExists(int moduleId) throws SQLException {
 		String query = "SELECT COUNT(*) AS count FROM module WHERE id = " + moduleId;
 		try (ResultSet resultSet = stmt.executeQuery(query)) {

@@ -191,4 +191,24 @@
     <servlet-name>AjouterModule</servlet-name>
     <url-pattern>/AjouterModule</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>AffecterNotesServlet</display-name>
+    <servlet-name>AffecterNotesServlet</servlet-name>
+    <servlet-class>controller.AffecterNotesServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AffecterNotesServlet</servlet-name>
+    <url-pattern>/AffecterNotesServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>EnregistrerNotesServlet</display-name>
+    <servlet-name>EnregistrerNotesServlet</servlet-name>
+    <servlet-class>controller.EnregistrerNotesServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>EnregistrerNotesServlet</servlet-name>
+    <url-pattern>/EnregistrerNotesServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

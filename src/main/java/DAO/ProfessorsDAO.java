@@ -4,8 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
+import business.Classe;
+import business.Etudiant;
 import business.Professeur;
 
 public class ProfessorsDAO {
@@ -41,7 +45,105 @@ public class ProfessorsDAO {
         }
         return prof;
     }
+	///////////////////////////////
 	
+    
+    
+    private static final String[] DAYS = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"};
+
+    
+    public String[][] showProfessorTimetable(int profId) throws SQLException {
+        String[][] timetable = new String[8][5];   
+        ResultSet resultSet = stmt.executeQuery("SELECT salle_id, module_id, day_of_week, start_time, classe_id FROM emploisclasses WHERE prof_id = " + profId);
+        while (resultSet.next()) {
+            int classe_id = resultSet.getInt("classe_id");
+            int salle_id = resultSet.getInt("salle_id");
+            int module_id = resultSet.getInt("module_id");
+            String day = resultSet.getString("day_of_week");
+            int startTime = resultSet.getInt("start_time");
+            int indexDay = Arrays.asList(DAYS).indexOf(day);
+            timetable[startTime][indexDay] = "Salle " + salle_id + " Module " + module_id + " Classe " + classe_id;
+        }
+        return timetable;
+    }
+    
+    
+    // Method to get modules by professor ID
+    public List<Integer> getIDsModulesByProfId(int profId) throws SQLException {
+        List<Integer> ids = new ArrayList<>();
+        ResultSet resultSet = stmt.executeQuery("SELECT module_id FROM prof_module WHERE professor_id = " + profId);
+        while (resultSet.next()) {
+            ids.add(resultSet.getInt("module_id"));
+        }
+        resultSet.close();
+        return ids;
+    }
+    public List<Module> getModulesByProfId(int profId) throws SQLException {
+        List<Module> modules = new ArrayList<>();
+        List<Integer> ids = getIDsModulesByProfId(profId);
+        for (int id : ids) {
+            ResultSet resultSet = stmt.executeQuery("SELECT * FROM module WHERE id = " + id);
+            while (resultSet.next()) {
+                modules.add(new Module(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getInt("nbr_heures")));
+            }
+            resultSet.close();
+        }
+        return modules;
+    }
+    
+    public List<Integer> getIDsClassesByModuleId(int moduleId) throws SQLException {
+        List<Integer> ids = new ArrayList<>();
+        ResultSet resultSet = stmt.executeQuery("SELECT classe_id FROM classe_module WHERE module_id = " + moduleId);
+        while (resultSet.next()) {
+            ids.add(resultSet.getInt("classe_id"));
+        }
+        resultSet.close();
+        return ids;
+    }
+
+    public List<Classe> getClassesByModuleId(int moduleId) throws SQLException {
+        List<Classe> classes = new ArrayList<>();
+        List<Integer> ids = getIDsClassesByModuleId(moduleId);
+        for (int id : ids) {
+            ResultSet resultSet = stmt.executeQuery("SELECT * FROM classe WHERE id = " + id);
+            while (resultSet.next()) {
+                classes.add(new Classe(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getString("filliere"), resultSet.getString("grade")));
+            }
+            resultSet.close();
+        }
+        return classes;
+    }
+    
+
+    // Method to get students by module ID based on classes
+    public List<Etudiant> getStudentsByModuleId(int moduleId) throws SQLException {
+        List<Etudiant> students = new ArrayList<>();
+        // Retrieve classes associated with the module
+        List<Classe> classes = getClassesByModuleId(moduleId);
+        for (Classe classe : classes) {
+            // Query for students in each class
+            ResultSet resultSet = stmt.executeQuery("SELECT student.* FROM student JOIN class_student ON student.id = class_student.student_id WHERE class_student.class_id = " + classe.getId());
+            while (resultSet.next()) {
+                students.add(new Etudiant(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getString("last_name")));
+            }
+        }
+        return students;
+    }
+
+    public float getNoteByStudentIdAndModuleId(int studentId, int moduleId) throws SQLException {
+        float note = -1; // Initialize note to -1 indicating no note exists by default
+        ResultSet resultSet = stmt.executeQuery("SELECT note_module FROM student_module WHERE student_id = " + studentId + " AND module_id = " + moduleId);
+        if (resultSet.next()) {
+            note = resultSet.getFloat("note_module");
+        }
+        return note;
+    }
+
+
+    // Method to affect note to a student
+    public void affecterNoteEtudiant(int moduleId, int studentId, float note) throws SQLException {
+        stmt.executeUpdate("INSERT INTO student_module (student_id, module_id, note_module) VALUES (" + studentId + ", " + moduleId + ", " + note + ")");
+    }
 		// consulter les Modules du Professeur.
 	public void consulterProfModule(int id) {
 	    try {

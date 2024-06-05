@@ -1,5 +1,10 @@
-<%@ page language="java" %>
-<%@ page import="java.sql.*" %>
+<%@ page language="java"%>
+<%@ page import="java.util.*, java.sql.*" %>
+<%@ page import="DAO.MaConnexion"%>
+<%@ page import="DAO.AdminDAO" %>
+<%@ page import="business.Statistics" %>
+<%@ page import="business.Classe" %>
+
 <%
 	response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 	response.setHeader("Pragma", "no-cache");
@@ -10,6 +15,11 @@
 	 }else{
 		 response.sendRedirect("../Login.jsp");
 	 }
+	 
+	 MaConnexion conn = new MaConnexion();
+	 AdminDAO dao = new AdminDAO(conn);
+	 List<Classe> availableClasses = dao.getAvailableClasses();
+
 %>
 
 <!DOCTYPE html>
@@ -137,7 +147,12 @@
 
             <label for="cneEtudiant">CNE Etudiant:</label>
             <input type="text" id="cneEtudiant" name="cneEtudiant" required>
-
+			<select id="classes" name="classes" required>
+			<option value=""> Choisir la classe </option>
+        		<% for (Classe classe : availableClasses) { %>
+            	<option value="<%= classe.getId() %>"><%= classe.getName() %></option>
+       		 	<% } %>
+    		</select>
             <button type="submit">Add</button>
         </form>
     </div>

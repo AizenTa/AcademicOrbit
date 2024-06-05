@@ -3,11 +3,26 @@
 <%@ page import="DAO.AdminDAO" %>
 <%@ page import="business.Admin" %>
 <%
- 	MaConnexion conn = new MaConnexion();
+    MaConnexion conn = new MaConnexion();
     List<Admin> admins = new ArrayList<>();
-   	AdminDAO dao = new AdminDAO(conn);
-  	admins = dao.getAllAdminsInfos();
+    AdminDAO dao = new AdminDAO(conn);
+    admins = dao.getAllAdminsInfos();
+    
+    String filterValue = request.getParameter("filterValue");
+    List<Admin> filteredAdmins = new ArrayList<>();
+    
+    if (filterValue != null && !filterValue.isEmpty()) {
+        for (Admin admin : admins) {
+            if (admin.getNom().toLowerCase().contains(filterValue.toLowerCase()) || 
+                admin.getPrenom().toLowerCase().contains(filterValue.toLowerCase())) {
+                filteredAdmins.add(admin);
+            }
+        }
+    } else {
+        filteredAdmins = admins; // If no filter value, show all admins
+    }
 %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -157,19 +172,18 @@
         <a href="add-admin.jsp">Add Admin</a>
     </div>
     <form action="" method="GET" style="margin-bottom: 20px;">
-        <input type="text" name="search" placeholder="Search by ID" style="padding: 8px; border-radius: 5px;">
-        <button type="submit" style="padding: 8px 20px; border-radius: 5px; background-color: #007bff; color: #fff; border: none;">Search</button>
+        <input type="text" name="filterValue" placeholder="Enter search term" style="padding: 8px; border-radius: 5px;">
+        <button type="submit" style="padding: 8px 20px; border-radius: 5px; background-color: #007bff; color: #fff; border: none;">Filter</button>
     </form>
+
     <table border="1">
         <tr>
-            <th>ID</th>
             <th>Nom</th>
             <th>Prenom</th>
             <th>Actions</th>
         </tr>
-        <% for (Admin admin : admins) { %>
+        <% for (Admin admin : filteredAdmins) { %>
             <tr>
-                <td><%= admin.getId() %></td>
                 <td><%= admin.getNom() %></td>
                 <td><%= admin.getPrenom() %></td> 
                 <td>

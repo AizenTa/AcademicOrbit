@@ -7,6 +7,19 @@
     List<Module> modules = new ArrayList<>();
     AdminDAO dao = new AdminDAO(conn);
     modules = dao.getAllModulesInfos();
+    
+    String search = request.getParameter("search");
+    List<Module> filteredModules = new ArrayList<>();
+    
+    if (search != null && !search.isEmpty()) {
+        for (Module module : modules) {
+            if (module.getName().toLowerCase().contains(search.toLowerCase())) {
+                filteredModules.add(module);
+            }
+        }
+    } else {
+        filteredModules = modules; // If no search term, show all modules
+    }
 %>
 <!DOCTYPE html>
 <html>
@@ -157,26 +170,23 @@
         <a href="add-module.jsp">Add Module</a>
     </div>
     <form action="" method="GET" style="margin-bottom: 20px;">
-        <input type="text" name="search" placeholder="Search by ID" style="padding: 8px; border-radius: 5px;">
+        <input type="text" name="search" placeholder="Search" style="padding: 8px; border-radius: 5px;">
         <button type="submit" style="padding: 8px 20px; border-radius: 5px; background-color: #007bff; color: #fff; border: none;">Search</button>
     </form>
     <table border="1">
         <tr>
             <th>ID</th>
             <th>Module Name</th>
-            <th>Nbr_heures</th>
             <th>Actions</th>
         </tr>
-        <% for (Module module : modules) { %>
+        <% for (Module module : filteredModules) { %>
             <tr>
                 <td><%= module.getId() %></td>
                 <td><%= module.getName() %></td>
-                <td><%= module.getNbr_heures() %></td>
                 <td>
-                     <a class="edit-link" href="edit-module.jsp?id=<%= module.getId() %>">Edit</a>
-                     <a class="delete-link" href="${pageContext.request.contextPath}/SupprimerModule?id=<%= module.getId() %>">Supprimer</a>
-                     <a class="add-link" href="${pageContext.request.contextPath}/Afficher?id=<%= module.getId() %>">voir les classes</a>
-        
+                    <a class="edit-link" href="edit-module.jsp?id=<%= module.getId() %>">Edit</a>
+                    <a class="delete-link" href="${pageContext.request.contextPath}/SupprimerModule?id=<%= module.getId() %>">Supprimer</a>
+                    <a class="add-link" href="listeModuleClasse.jsp?id=<%= module.getId() %>">voir les classes</a>
                 </td>
             </tr>
         <% } %>

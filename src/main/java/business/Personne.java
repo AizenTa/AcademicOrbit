@@ -63,7 +63,9 @@ public class Personne {
 		this.nom = nom;
 		this.prenom = prenom;
 	}
-
+	public Personne() {
+		super();
+	}
 	public Personne(int id2, String nom2, String prenom2, String address2, String sex2, int age2) {
 		super();
 		this.id=id2;

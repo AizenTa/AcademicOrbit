@@ -113,6 +113,13 @@ form button {
     margin-bottom: 10px;
     color: var(--first-color);
 }
+
+.help-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -123,6 +130,9 @@ form button {
     <div class="container">
         <div class="left">
             <h2>Modifier vos informations</h2>
+            <div class="help-box">
+                Si vous ne souhaitez pas changer votre mot de passe, vous pouvez répéter votre ancien mot de passe.
+            </div>
             <form action="${pageContext.request.contextPath}/UpdateAdminController" method="post">
                 <label for="nom">Nom:</label>
                 <input type="text" id="nom" name="nom" value="<%= admin.getNom() %>" required><br>

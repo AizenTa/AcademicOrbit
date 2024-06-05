@@ -18,6 +18,23 @@
     List<Etudiant> etudiants = new ArrayList<>();
     AdminDAO dao = new AdminDAO(conn);
     etudiants = dao.getAllEtudiantInfos();
+
+    String searchQuery = request.getParameter("searchQuery");
+    List<Etudiant> filteredEtudiants = new ArrayList<>();
+    
+    if (searchQuery != null && !searchQuery.isEmpty()) {
+        for (Etudiant etudiant : etudiants) {
+            if (etudiant.getNom().toLowerCase().contains(searchQuery.toLowerCase())) {
+                filteredEtudiants.add(etudiant);
+            }else if(etudiant.getPrenom().toLowerCase().contains(searchQuery.toLowerCase())){
+                filteredEtudiants.add(etudiant);
+            }else if(etudiant.getCne_student().toLowerCase().contains(searchQuery.toLowerCase())){
+                filteredEtudiants.add(etudiant);
+            }
+        }
+    } else {
+        filteredEtudiants = etudiants; // If no search query, show all etudiants
+    }
 %>
 <!DOCTYPE html>
 <html>
@@ -167,46 +184,46 @@
     <div class="add-link">
         <a href="add-etudiant.jsp">Ajouter Etudiant</a>
     </div>
-    <form action="" method="GET" style="margin-bottom: 20px;">
-        <input type="text" name="cne" placeholder="Search by Professor's CNE" style="padding: 8px; border-radius: 5px;">
-        <button type="submit" style="padding: 8px 20px; border-radius: 5px; background-color: #007bff; color: #fff; border: none;">Search</button>
-    </form>
+   <div>
+    <p>Vous pouvez rechercher par nom, prénom ou CNE (Code National d'Étudiant).</p>
+</div>
+
+<form action="" method="GET" style="margin-bottom: 20px;">
+    <input type="text" name="searchQuery" placeholder="Recherche" style="padding: 8px; border-radius: 5px;">
+    <button type="submit" style="padding: 8px 20px; border-radius: 5px; background-color: #007bff; color: #fff; border: none;">Rechercher</button>
+</form>
     <table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Prenom</th>
+        <th>Nom</th>
+        <th>Address</th>
+        <th>Sexe</th>
+        <th>Age</th>
+        <th>CNE d'Etudiant</th>
+        <th>Note finale d'Etudiant</th>
+        <th>Abscence d'Etudiant</th>
+        <th>Actions</th>
+    </tr>
+    <% for (Etudiant etudiant : filteredEtudiants) { %>
         <tr>
-            <th>ID</th>
-            <th>Prenom</th>
-            <th>Nom</th>
-            <th>Address</th>
-            <th>Sexe</th>
-            <th>Age</th>
-            <th>CNE d'Etudiant</th>
-			<th>Note finale d'Etudiant</th>
-			<th>Abscence d'Etudiant</th>
-			<th>Classe D'etudiant</th>
-            <th>Actions</th>
+            <td><%= etudiant.getId() %></td>
+            <td><%= etudiant.getNom() %></td>
+            <td><%= etudiant.getPrenom() %></td>
+            <td><%= etudiant.getAddress() %></td>
+            <td><%= etudiant.getSex() %></td>
+            <td><%= etudiant.getAge() %></td>
+            <td><%= etudiant.getCne_student() %></td>
+            <td><%= etudiant.getNote_finale() %></td>
+            <td><%= etudiant.getAbscence_hours() %></td>
+            
+            <td>
+                <a class="edit-link" href="edit-etudiant.jsp?id=<%= etudiant.getId() %>">Edit</a>
+                <a class="delete-link" href="${pageContext.request.contextPath}/SupprimerEtudiant?id=<%= etudiant.getId() %>">Supprimer</a>                                   
+            </td>
         </tr>
-        <% for (Etudiant etudiant : etudiants) { %>
-            <tr>
-                <td><%= etudiant.getId() %></td>
-                <td><%= etudiant.getNom() %></td>
-                <td><%= etudiant.getPrenom() %></td>
-                <td><%= etudiant.getAddress() %></td>
-                <td><%= etudiant.getSex() %></td>
-                <td><%= etudiant.getAge() %></td>
-                <td><%= etudiant.getCne_student() %></td>
-                <td><%= etudiant.getNote_finale() %></td>
-                <td><%= etudiant.getAbscence_hours() %></td>
-                <td><%= etudiant.getClasse_student() %></td>
-                
-                <td>
-                    <a class="edit-link" href="edit-etudiant.jsp?id=<%= etudiant.getId() %>">Edit</a>
-                    <a class="delete-link" href="${pageContext.request.contextPath}/SupprimerEtudiant?id=<%= etudiant.getId() %>">Supprimer</a>                    
-                    <a class="add-link" href="${pageContext.request.contextPath}/?id=<%= etudiant.getId() %>">Affecter Classe</a>                    
-               
-                </td>
-            </tr>
-        <% } %>
-    </table>
+    <% } %>
+</table>
     <jsp:include page="adminnavbar.jsp" />
 </body>
 </html>

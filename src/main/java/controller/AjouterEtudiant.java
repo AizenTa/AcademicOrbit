@@ -30,12 +30,13 @@ public class AjouterEtudiant extends HttpServlet {
 	            String sex = request.getParameter("sex");
 	            int age = Integer.parseInt(request.getParameter("age"));
 	            String cne_etudiant = request.getParameter("cneEtudiant");
+	            String[] classIds = request.getParameterValues("classes");
 
 	            Etudiant etudiant = new Etudiant(username, password, name, lastName,address,sex,age,cne_etudiant);
 	            try {
 	            	 MaConnexion connexion= new MaConnexion();
 	                 AdminDAO dao = new AdminDAO(connexion);
-	                 dao.ajouterEtudiant(etudiant);
+	                 dao.ajouterEtudiant(etudiant,classIds);
 	            } catch (SQLException e) {
 	                e.printStackTrace();
 	            } catch (ClassNotFoundException e) {

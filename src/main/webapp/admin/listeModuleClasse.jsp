@@ -2,6 +2,8 @@
 <%@ page import="java.util.*, java.sql.*" %>
 <%@ page import="DAO.AdminDAO" %>
 <%@ page import="business.Classe" %>
+<%@ page import="business.Module" %>
+
 <%
 	response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 	response.setHeader("Pragma", "no-cache");
@@ -14,30 +16,17 @@
 		 response.sendRedirect("../Login.jsp");
 	 }
 	 
+	int id = Integer.parseInt(request.getParameter("id"));
 	MaConnexion conn = new MaConnexion();
     List<Classe> classes = new ArrayList<>();
     AdminDAO dao = new AdminDAO(conn);
-    classes = dao.getAllClasseInfos();
+    classes = dao.getAllModuleClasse(id);
     
-    String filterValue = request.getParameter("filterValue");
-    List<Classe> filteredClasses = new ArrayList<>();
-    
-    if (filterValue != null && !filterValue.isEmpty()) {
-        for (Classe classe : classes) {
-            if (classe.getName().toLowerCase().contains(filterValue.toLowerCase()) || 
-                classe.getFilliere().toLowerCase().contains(filterValue.toLowerCase()) || 
-                classe.getGrade().toLowerCase().contains(filterValue.toLowerCase())) {
-                filteredClasses.add(classe);
-            }
-        }
-    } else {
-        filteredClasses = classes; // If no filter value, show all classes
-    }
 %>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Professors List</title>
+    <title>Module Liste</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -178,12 +167,12 @@
     </style>
 </head>
 <body>
-    <h1>Professional Professors List</h1>
+    <h1>Professional Etudiant List</h1>
     <div class="add-link">
-        <a href="add-classe.jsp">Ajouter Classe</a>
+        <a href="add-etudiant.jsp">Ajouter Etudiant</a>
     </div>
     <form action="" method="GET" style="margin-bottom: 20px;">
-        <input type="text" name="filterValue" placeholder="Recherche" style="padding: 8px; border-radius: 5px;">
+        <input type="text" name="cne" placeholder="Search by Professor's CNE" style="padding: 8px; border-radius: 5px;">
         <button type="submit" style="padding: 8px 20px; border-radius: 5px; background-color: #007bff; color: #fff; border: none;">Search</button>
     </form>
     <table border="1">
@@ -194,7 +183,7 @@
             <th>Annee</th>
             <th>Actions</th>
         </tr>
-        <% for (Classe classe : filteredClasses) { %>
+        <% for (Classe classe : classes) { %>
             <tr>
                 <td><%= classe.getId() %></td>
                 <td><%= classe.getName() %></td>
