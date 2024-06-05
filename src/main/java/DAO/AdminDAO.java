@@ -120,8 +120,9 @@ public class AdminDAO {
 	        if (rs.next()) {
 	            numberOfModules = rs.getInt("count");
 	        }
-
-	        return new Statistics(numberOfStudents, numberOfProfessors, numberOfClasses, numberOfModules, maleStudents, femaleStudents, maleProfessors, femaleProfessors);
+	        
+	        Statistics stat = new Statistics(numberOfStudents, numberOfProfessors, numberOfClasses, numberOfModules, maleStudents, femaleStudents, maleProfessors, femaleProfessors);
+	        return stat;
 	    }
 		
 		
@@ -130,8 +131,8 @@ public class AdminDAO {
 	        Admin admin = null;
 	        try {
 	        	 rs = stmt.executeQuery("SELECT * FROM admin WHERE username = '" + username + "'");
-
-	            if (rs.next()) {
+	        	 updateNotes();
+	        	 if (rs.next()) {
 	                admin = new Admin(
 	                    rs.getInt("id"),
 	                    rs.getString("username"),
@@ -536,21 +537,6 @@ public class AdminDAO {
 		}
 		return hexString.toString();
 	}
-
-	public String[][] showProfessorTimetable(int profId) throws SQLException {
-	    String[][] timetable = new String[8][5];   
-	    ResultSet resultSet = stmt.executeQuery("SELECT salle_id, module_id, day_of_week, start_time, classe_id FROM EmploisClasses WHERE prof_id = " + profId);
-	    while (resultSet.next()) {
-	        int classe_id = resultSet.getInt("classe_id");
-	        int salle_id = resultSet.getInt("salle_id");
-	        int module_id = resultSet.getInt("module_id");
-	        String day = resultSet.getString("day_of_week");
-	        int startTime = resultSet.getInt("start_time");
-	        int indexDay = Arrays.asList(DAYS).indexOf(day);
-	        timetable[startTime][indexDay] = "Salle " + salle_id + " Module " + module_id + " Classe " + classe_id;
-	    }
-	    return timetable;
-	}
 	
 	private void emploisClasse(int classeId, int moduleId) throws SQLException {
         List<Integer> availableSlots = new ArrayList<>();
@@ -756,49 +742,47 @@ public class AdminDAO {
 
 	}
 	
+	private ArrayList<Integer> idsStudents() throws SQLException {
+	    ResultSet resultat_student = stmt.executeQuery("SELECT * FROM student");
+		ArrayList<Integer> ids = new ArrayList<>();    
+	    while(resultat_student.next()) {    
+		     ids.add(resultat_student.getInt("id"));
+	    }
+    return ids;
+	}
 	
-	private boolean checkIfModuleExists(int moduleId) throws SQLException {
-		String query = "SELECT COUNT(*) AS count FROM module WHERE id = " + moduleId;
-		try (ResultSet resultSet = stmt.executeQuery(query)) {
-			if (resultSet.next()) {
-				int count = resultSet.getInt("count");
-				return count > 0;
-			}
-		}
-		return false;
+	
+	private void updateNotes() throws SQLException {
+	    ArrayList<Integer> ids = idsStudents();
+        	for(int id : ids) {
+                float note_finale = calculerNoteFinale(id);
+                stmt.executeUpdate("UPDATE student SET note_finale='" + note_finale + "' WHERE ID= " + id);
+        	}
+	}
+	
+	private float calculerNoteFinale(int id1) throws SQLException {
+		float note_finale=0;
+		ResultSet resultSet = stmt.executeQuery("SELECT * FROM student_module WHERE student_id='" + id1 + "'");
+	    ArrayList<Float> notes = new ArrayList<>();
+
+	    while (resultSet.next()) {
+	        float moduleNote = resultSet.getFloat("note_module");
+	        notes.add(moduleNote);
+	    }
+
+	    int nbr_modules = notes.size();
+	    float sum_notes = 0;
+
+	    for (int i = 0; i < notes.size(); i++) {
+	        sum_notes = sum_notes + notes.get(i);
+	    }
+
+	    if (nbr_modules > 0) {
+	        note_finale = sum_notes / nbr_modules;
+	    }
+		return note_finale;
+		
 	}
 
-	private boolean checkIfProfessorExists(int professorId) throws SQLException {
-		String query = "SELECT COUNT(*) AS count FROM prof WHERE id = " + professorId;
-		try (ResultSet resultSet = stmt.executeQuery(query)) {
-			if (resultSet.next()) {
-				int count = resultSet.getInt("count");
-				return count > 0;
-			}
-		}
-		return false;
-	}
-	
-	private boolean checkIfClasseExist(int classeId) throws SQLException {
-		String query = "SELECT COUNT(*) AS count FROM classe WHERE id = " + classeId;
-		try (ResultSet resultSet = stmt.executeQuery(query)) {
-			if (resultSet.next()) {
-				int count = resultSet.getInt("count");
-				return count > 0;
-			}
-		}
-		return false;
-	}
-	
-	private boolean checkIfStudentExist(int studentId) throws SQLException {
-		String query = "SELECT COUNT(*) AS count FROM student WHERE id = " + studentId;
-		try (ResultSet resultSet = stmt.executeQuery(query)) {
-			if (resultSet.next()) {
-				int count = resultSet.getInt("count");
-				return count > 0;
-			}
-		}
-		return false;
-	}
 	
 }

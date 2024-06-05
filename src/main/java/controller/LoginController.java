@@ -54,7 +54,7 @@ public class LoginController extends HttpServlet {
                 case "student":
                 	session.setAttribute("userType", userType);
                     session.setAttribute("username", username);
-                    response.sendRedirect("./admin/admin.jsp");
+                    response.sendRedirect("./etudiant/dashbord.jsp");
                     break;
                 }
             } else {

@@ -56,6 +56,10 @@ public class Etudiant extends Personne{
 	}
 	
 
+	public Etudiant(int id,String username,String password,String nom, String prenom) {
+		super(id,username,password,nom, prenom);
+	}
+	
 
 
 	// getter & setter 

@@ -9,6 +9,8 @@ public class Statistics {
     private int femaleStudents;
     private int maleProfessors;
     private int femaleProfessors;
+    private int nombreNotesEntrees = 0;
+    private int nombreNotesNonEntrees = 0;
 
     // Constructeur, getters et setters
 
@@ -47,10 +49,6 @@ public class Statistics {
 		this.numberOfClasses = numberOfClasses;
 	}
 
-	public int getNumberOfModules() {
-		return numberOfModules;
-	}
-
 	public void setNumberOfModules(int numberOfModules) {
 		this.numberOfModules = numberOfModules;
 	}
@@ -75,6 +73,22 @@ public class Statistics {
 		return maleProfessors;
 	}
 
+	public int getNombreNotesEntrees() {
+		return nombreNotesEntrees;
+	}
+
+	public void setNombreNotesEntrees(int nombreNotesEntrees) {
+		this.nombreNotesEntrees = nombreNotesEntrees;
+	}
+
+	public int getNombreNotesNonEntrees() {
+		return nombreNotesNonEntrees;
+	}
+
+	public void setNombreNotesNonEntrees(int nombreNotesNonEntrees) {
+		this.nombreNotesNonEntrees = nombreNotesNonEntrees;
+	}
+
 	public void setMaleProfessors(int maleProfessors) {
 		this.maleProfessors = maleProfessors;
 	}
@@ -86,6 +100,19 @@ public class Statistics {
 	public void setFemaleProfessors(int femaleProfessors) {
 		this.femaleProfessors = femaleProfessors;
 	}
+	
+	public double getEnteredGradesPercentage() {
+        int totalStudents = maleStudents + femaleStudents;
+        int totalProfessors = maleProfessors + femaleProfessors;
+        if (totalStudents == 0 || totalProfessors == 0 || numberOfClasses == 0) {
+            return 0.0;
+        }
+        return ((double) (nombreNotesEntrees) / (nombreNotesEntrees + nombreNotesNonEntrees)) * 100.0;
+    }
 
+    // Méthode pour récupérer le nombre de modules
+    public int getNumberOfModules() {
+        return numberOfModules;
+    }
     // Getters et setters pour les nouveaux champs...
 }

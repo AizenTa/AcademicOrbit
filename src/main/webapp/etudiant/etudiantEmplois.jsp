@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ page import="java.util.*, java.sql.*" %>
-<%@ page import="DAO.ProfessorsDAO, business.Professeur" %>
+<%@ page import="DAO.StudentDAO, business.Professeur" %>
 <%@page import="DAO.MaConnexion"%>
 
 <%
@@ -75,8 +75,8 @@
 <% 
 int id = Integer.parseInt(request.getParameter("id"));
     MaConnexion connexion = new MaConnexion();
-    ProfessorsDAO profDAO = new ProfessorsDAO(connexion);
-    String[][] timetable = profDAO.showProfessorTimetable(id);
+    StudentDAO studentDAO = new StudentDAO(connexion);
+    String[][] timetable = studentDAO.showClassTimetable(id);
     request.setAttribute("timetable", timetable);
     if (timetable == null) {
         timetable = new String[8][5]; // Initialize an empty timetable
@@ -122,6 +122,6 @@ int id = Integer.parseInt(request.getParameter("id"));
         <% } %>
     </tbody>
 </table>
-<jsp:include page="profnavbar.jsp" />
+<jsp:include page="etudiantnavbar.jsp" />
 </body>
 </html>
