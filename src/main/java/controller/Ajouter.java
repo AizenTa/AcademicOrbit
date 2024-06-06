@@ -29,7 +29,7 @@ public class Ajouter extends HttpServlet {
 	            String address = request.getParameter("address");
 	            String sex = request.getParameter("sex");
 	            int age = Integer.parseInt(request.getParameter("age"));
-	            String cneProf = request.getParameter("cne_prof");
+	            String cneProf = request.getParameter("username");
 
 	            Professeur prof = new Professeur(username, password, name, lastName, address, sex, age, cneProf);
 	            try {

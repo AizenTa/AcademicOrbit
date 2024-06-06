@@ -19,14 +19,15 @@ if (session.getAttribute("username") != null) {
 
             body {
                 font-family: 'Roboto', sans-serif;
-                background: linear-gradient(135deg, #f8f9fa, #e0e0e0);
+                background: #f8f9fa;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                min-height: 190vh;
+                min-height: 100vh;
                 margin: 0;
                 color: #2c3e50;
             }
+
             h1 {
                 text-align: center;
                 color: #34495e;
@@ -35,6 +36,7 @@ if (session.getAttribute("username") != null) {
                 font-weight: 700;
                 text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
+
             .form-container {
                 width: 100%;
                 max-width: 600px;
@@ -43,13 +45,16 @@ if (session.getAttribute("username") != null) {
                 border-radius: 15px;
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
                 animation: fadeInUp 0.7s ease-in-out;
+                margin-top: 20px;
             }
+
             label {
                 display: block;
                 margin: 15px 0 5px;
                 font-weight: 500;
                 color: #34495e;
             }
+
             input[type="text"], input[type="password"], input[type="number"] {
                 width: 100%;
                 padding: 12px;
@@ -61,22 +66,13 @@ if (session.getAttribute("username") != null) {
                 font-size: 1rem;
                 transition: border-color 0.3s ease, box-shadow 0.3s ease;
             }
+
             input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus {
                 border-color: #2980b9;
                 box-shadow: 0 0 8px rgba(41, 128, 185, 0.3);
                 outline: none;
             }
-            .radio-group {
-                display: flex;
-                justify-content: flex-start;
-                align-items: center;
-                margin-bottom: 20px;
-            }
-            .radio-group label {
-                margin-right: 20px;
-                font-weight: 400;
-                color: #34495e;
-            }
+
             button {
                 display: block;
                 width: 100%;
@@ -89,10 +85,12 @@ if (session.getAttribute("username") != null) {
                 cursor: pointer;
                 transition: background 0.3s ease-in-out, transform 0.2s;
             }
+
             button:hover {
                 background: linear-gradient(135deg, #273746, #212f3c);
                 transform: translateY(-2px);
             }
+
             @keyframes fadeInUp {
                 from {
                     opacity: 0;
@@ -103,6 +101,7 @@ if (session.getAttribute("username") != null) {
                     transform: translateY(0);
                 }
             }
+
         </style>
 </head>
 <body>
@@ -123,7 +122,7 @@ if (session.getAttribute("username") != null) {
 
             <button type="submit">Add</button>
         </form>
-    </div> 
+    </div>
 
     <jsp:include page="adminnavbar.jsp" />
 </body>

@@ -6,17 +6,21 @@
 <%@ page import="business.Admin" %>
 
 <%
+    // Disable caching
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setHeader("Pragma", "no-cache");
     response.setHeader("Expires", "0");
 
+    // Check if the user is logged in
     String username = "";
     if (session.getAttribute("username") != null) {
         username = session.getAttribute("username").toString();
     } else {
         response.sendRedirect("../Login.jsp");
+        return;
     }
 
+    // Fetch admin details and statistics
     MaConnexion conn = new MaConnexion();
     AdminDAO dao = new AdminDAO(conn);
     Admin admin = dao.getAdminByUsername(username);
@@ -24,111 +28,161 @@
 %>
 
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
 <meta charset="ISO-8859-1">
 <title>Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
 :root {
-    --header-height: 3rem;
-    --nav-width: 68px;
-    --first-color: #A9D6B9;
-    --first-color-light: #0000000;
-    --white-color: #F7F6FB;
-    --body-font: 'Nunito', sans-serif;
-    --normal-font-size: 1rem;
-    --z-fixed: 100;
-}
-
-*, ::before, ::after {
-    box-sizing: border-box;
+    --primary-color: #A9D6B9;
+    --secondary-color: #2A3652;
+    --accent-color: #A98743;
+    --background-color: #9D8CA1;
+    --white-color: #9993B2;
+    --dark-color: #9993B2;
+    --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    --transition: all 0.3s ease;
 }
 
 body {
-    position: relative;
-    margin: var(--header-height) 0 0 0;
-    padding: 0 1rem;
-    font-family: var(--body-font);
-    font-size: var(--normal-font-size);
-    transition: .5s;
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--background-color);
+    color: var(--dark-color);
+    margin: 0;
+    padding: 0;
 }
 
 h2.welcome {
     font-size: 2rem;
-    color: var(--first-color);
+    color: var(--secondary-color);
     margin-bottom: 1rem;
+    text-align: center;
+    margin-top: 1rem;
 }
 
+h2.stats {
+    font-size: 2rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+    text-align: center;
+    margin-top: 1rem;
+}
 .container {
     display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 110px;
 }
 
 .left, .right {
-    width: 50%;
-    padding: 10px;
+    flex: 1;
+    min-width: 300px;
+    padding: 20px;
+    background: var(--white-color);
+    border-radius: 15px;
+    box-shadow: var(--box-shadow);
+    margin-bottom: 20px;
+    transition: var(--transition);
+}
+
+.left:hover, .right:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 form label {
-    display: inline-block;
-    width: 140px;
+    display: block;
     font-weight: bold;
+    margin-bottom: 5px;
 }
 
 form input {
-    display: inline-block;
+    display: block;
+    width: 100%;
+    padding: 10px;
     margin-bottom: 10px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    transition: var(--transition);
+}
+
+form input:focus {
+    border-color: var(--secondary-color);
 }
 
 form button {
-    display: inline-block;
-    padding: 10px 15px;
-    background-color: var(--first-color);
+    padding: 10px 20px;
+    background-color: var(--primary-color);
     color: var(--white-color);
     border: none;
     cursor: pointer;
     font-weight: bold;
+    border-radius: 5px;
+    transition: var(--transition);
+}
+
+form button:hover {
+    background-color: var(--secondary-color);
 }
 
 .chart-container {
     width: 100%;
-    margin: 10px 0;
+    margin: 20px 0;
 }
 
 .chart-group {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
+    gap: 20px;
 }
 
 .small-chart {
-    width: 45% !important;
-    height: 300px !important;
+    width: 45%;
+    max-width: px; /* Set a maximum width for the small charts */
 }
 
 .chart-title {
     text-align: center;
     font-size: 1.2rem;
     margin-bottom: 10px;
-    color: var(--first-color);
+    color: var(--secondary-color);
 }
 
 .help-box {
-    border: 1px solid #ccc;
+    border: 1px solid var(--primary-color);
     padding: 10px;
     margin-bottom: 10px;
-    background-color: #f9f9f9;
+    background-color: var(--white-color);
+    border-radius: 5px;
+    box-shadow: var(--box-shadow);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 1s ease-in-out;
 }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 <div>
-    <h2 class="welcome">Bienvenue, <%= admin.getNom() %> <%= admin.getPrenom() %>!</h2>
-
     <div class="container">
         <div class="left">
+            <h2 class="welcome">Bienvenue, <%= admin.getNom() %> <%= admin.getPrenom() %>!</h2>
+        
             <h2>Modifier vos informations</h2>
             <div class="help-box">
                 Si vous ne souhaitez pas changer votre mot de passe, vous pouvez répéter votre ancien mot de passe.
@@ -144,7 +198,7 @@ form button {
                 <input type="text" id="username" name="username" value="<%= admin.getUsername() %>" required><br>
 
                 <label for="password">Nouveau mot de passe:</label>
-                <input type="password" id="password" name="password" ><br>
+                <input type="password" id="password" name="password"><br>
 
                 <label for="oldPassword">Ancien mot de passe:</label>
                 <input type="password" id="oldPassword" name="oldPassword" required><br>
@@ -153,26 +207,25 @@ form button {
             </form>
         </div>
         <div class="right">
-            <h2>Statistiques</h2>
+            <h2 class="stats">Statistiques</h2>
             <div class="chart-container">
                 <canvas id="totalChart"></canvas>
             </div>
-        </div>
-    </div>
-    <div class="chart-group">
-        <div class="chart-container small-chart">
-            <div class="chart-title">Répartition des sexes des étudiants</div>
-            <canvas id="studentGenderChart"></canvas>
-        </div>
-        <div class="chart-container small-chart">
-            <div class="chart-title">Répartition des sexes des professeurs</div>
-            <canvas id="professorGenderChart"></canvas>
+            <hr>
+            <div class="chart-group">
+                <div class="chart-container small-chart">
+                    <div class="chart-title">Répartition des sexes des étudiants</div>
+                    <canvas id="studentGenderChart" width="200" height="200"></canvas>
+                </div>
+                <div class="chart-container small-chart">
+                    <div class="chart-title">Répartition des sexes des professeurs</div>
+                    <canvas id="professorGenderChart" width="200" height="200"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Include the navbar -->
-<jsp:include page="../success.jsp" />
 <jsp:include page="adminnavbar.jsp" />
 
 <script>

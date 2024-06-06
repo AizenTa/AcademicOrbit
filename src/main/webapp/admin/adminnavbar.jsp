@@ -182,7 +182,7 @@
     <div class="l-navbar" id="nav-bar">
         <nav class="nav">
             <div>
-                <a href="#" class="nav_logo"> 
+                <a href="admin.jsp" class="nav_logo"> 
                     <img src="../img/logodash.png" class="" alt="dashboard icon" style="width: 30px; height: 30px;">
                     <span class="nav_logo-name">Academic Orbit</span> 
                 </a>
@@ -262,10 +262,17 @@
             // Appliquer les styles en fonction de la page actuelle
             if (currentPage === 'admin.jsp') {
                 setActiveLink('admin-link');
-            } else if (currentPage === 'prof-liste.jsp') {
+            } else if (currentPage === 'admin-liste.jsp') {
+                setActiveLink('admins-link');
+            }else if (currentPage === 'prof-liste.jsp') {
                 setActiveLink('professors-link');
-            } // Ajoutez d'autres conditions pour chaque page
-
+            }else if (currentPage === 'etudiant-liste.jsp') {
+                setActiveLink('students-link');
+            }else if (currentPage === 'module-liste.jsp') {
+                setActiveLink('modules-link');
+            }else if (currentPage === 'classe-liste.jsp') {
+                setActiveLink('classes-link');
+            }
         });
     </script>
 </body>

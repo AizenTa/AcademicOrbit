@@ -131,7 +131,6 @@ public class AdminDAO {
 	        Admin admin = null;
 	        try {
 	        	 rs = stmt.executeQuery("SELECT * FROM admin WHERE username = '" + username + "'");
-	        	 updateNotes();
 	        	 if (rs.next()) {
 	                admin = new Admin(
 	                    rs.getInt("id"),
@@ -143,6 +142,7 @@ public class AdminDAO {
 	            }
 	        } finally {
 	        }
+       	 	updateNotes();
 	        return admin;
 	    }
 

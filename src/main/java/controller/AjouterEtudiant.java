@@ -29,7 +29,7 @@ public class AjouterEtudiant extends HttpServlet {
 	            String address = request.getParameter("address");
 	            String sex = request.getParameter("sex");
 	            int age = Integer.parseInt(request.getParameter("age"));
-	            String cne_etudiant = request.getParameter("cneEtudiant");
+	            String cne_etudiant = request.getParameter("username");
 	            String[] classIds = request.getParameterValues("classes");
 
 	            Etudiant etudiant = new Etudiant(username, password, name, lastName,address,sex,age,cne_etudiant);
