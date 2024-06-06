@@ -181,9 +181,9 @@ form button:hover {
 <div>
     <div class="container">
         <div class="left">
-            <h2 class="welcome">Bienvenue, <%= admin.getNom() %> <%= admin.getPrenom() %>!</h2>
+            <h2 class="welcome" style="color:#007BFF;">Bienvenue, <%= admin.getNom() %> <%= admin.getPrenom() %>!</h2>
         
-            <h2>Modifier vos informations</h2>
+            <h2 style="color:#007BFF;">Modifier vos informations</h2>
             <div class="help-box">
                 Si vous ne souhaitez pas changer votre mot de passe, vous pouvez répéter votre ancien mot de passe.
             </div>
@@ -207,18 +207,18 @@ form button:hover {
             </form>
         </div>
         <div class="right">
-            <h2 class="stats">Statistiques</h2>
+            <h2 class="stats" style="color:#007BFF;">Statistiques</h2>
             <div class="chart-container">
                 <canvas id="totalChart"></canvas>
             </div>
             <hr>
             <div class="chart-group">
                 <div class="chart-container small-chart">
-                    <div class="chart-title">Répartition des sexes des étudiants</div>
+                    <div class="chart-title" style="color:#007BFF;">Répartition des sexes des étudiants</div>
                     <canvas id="studentGenderChart" width="200" height="200"></canvas>
                 </div>
                 <div class="chart-container small-chart">
-                    <div class="chart-title">Répartition des sexes des professeurs</div>
+                    <div class="chart-title" style="color:#007BFF;">Répartition des sexes des professeurs</div>
                     <canvas id="professorGenderChart" width="200" height="200"></canvas>
                 </div>
             </div>

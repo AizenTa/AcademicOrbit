@@ -29,7 +29,7 @@
         width: 100%;
         border-collapse: separate;
         border-spacing: 0;
-        margin-top: 20px;
+        margin-top: 100px;
         background-color: #ffffff;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
@@ -41,7 +41,7 @@
         box-sizing: border-box;
     }
     th {
-        background-color: #4CAF50;
+        background-color: #007bff; /* Changed from green to blue */
         color: white;
         font-weight: bold;
         padding: 10px;
@@ -69,6 +69,7 @@
         background-color: #ffffff;
     }
 </style>
+
 </head>
 <body>
 
